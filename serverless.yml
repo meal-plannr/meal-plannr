@@ -1,0 +1,18 @@
+service: meal-planner-api
+
+provider:
+  name: aws
+  runtime: java8
+  region: eu-west-2
+  stage: dev
+
+package:
+  artifact: target/meal-planner-api-dev.jar
+
+functions:
+  hello:
+    handler: com.serverless.Handler
+    events:
+      - http:
+          path: say/hello
+          method: get
