@@ -42,12 +42,14 @@ functions:
       - http:
           path: /meals
           method: post
+          authorizer: aws_iam
   getMeal:
     handler: com.mealplanner.function.GetMealHandler
     events:
       - http:
           path: /meals/{id}
           method: get
+          authorizer: aws_iam
 
 custom:
   # Our stage is based on what is passed in when running serverless

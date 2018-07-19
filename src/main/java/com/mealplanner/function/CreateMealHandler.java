@@ -5,6 +5,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazonaws.services.lambda.runtime.CognitoIdentity;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,6 +21,16 @@ public class CreateMealHandler implements RequestHandler<Map<String, Object>, Ap
     @Override
     public ApiGatewayResponse handleRequest(final Map<String, Object> request, final Context context) {
         try {
+            final CognitoIdentity identity = context.getIdentity();
+            if (identity == null) {
+                return ApiGatewayResponse.builder()
+                        .setStatusCode(403)
+                        .setObjectBody("Not authenticated")
+                        .build();
+            }
+
+            final String userId = identity.getIdentityId();
+
             final JsonNode body = new ObjectMapper().readTree((String) request.get("body"));
             final MealRepository repository = new MealRepository();
             final Meal meal = new Meal();
