@@ -22,6 +22,7 @@ public class CreateMealHandler implements RequestHandler<Map<String, Object>, Ap
     public ApiGatewayResponse handleRequest(final Map<String, Object> request, final Context context) {
         try {
             final CognitoIdentity identity = context.getIdentity();
+            LOGGER.info("Cognito identity [{}]", identity);
             if (identity == null) {
                 return ApiGatewayResponse.builder()
                         .setStatusCode(403)
@@ -30,10 +31,12 @@ public class CreateMealHandler implements RequestHandler<Map<String, Object>, Ap
             }
 
             final String userId = identity.getIdentityId();
+            LOGGER.info("User ID [{}]", userId);
 
             final JsonNode body = new ObjectMapper().readTree((String) request.get("body"));
             final MealRepository repository = new MealRepository();
             final Meal meal = new Meal();
+            meal.setUserId(userId);
             meal.setDescription(body.get("description").asText());
             repository.save(meal);
 

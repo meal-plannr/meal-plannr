@@ -42,6 +42,7 @@ functions:
       - http:
           path: /meals
           method: post
+          cors: true
           authorizer: aws_iam
   getMeal:
     handler: com.mealplanner.function.GetMealHandler
