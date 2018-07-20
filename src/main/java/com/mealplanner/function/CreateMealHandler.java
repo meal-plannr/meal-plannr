@@ -1,7 +1,5 @@
 package com.mealplanner.function;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,21 +9,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
+import com.mealplanner.function.util.ApiGatewayRequest;
 import com.serverless.ApiGatewayResponse;
 
-public class CreateMealHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
+public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMealHandler.class);
 
     @Override
-    public ApiGatewayResponse handleRequest(final Map<String, Object> request, final Context context) {
-        final Map<String, Object> requestContext = (Map<String, Object>) request.get("requestContext");
-        final Map<String, Object> identity = (Map<String, Object>) requestContext.get("identity");
-        final String userId = (String) identity.get("cognitoIdentityId");
+    public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
         try {
+            final String userId = request.getRequestContext().getIdentity().getCognitoIdentityId();
             LOGGER.info("User ID [{}]", userId);
 
-            final JsonNode body = new ObjectMapper().readTree((String) request.get("body"));
+            final JsonNode body = new ObjectMapper().readTree(request.getBody());
             final MealRepository repository = new MealRepository();
             final Meal meal = new Meal();
             meal.setUserId(userId);

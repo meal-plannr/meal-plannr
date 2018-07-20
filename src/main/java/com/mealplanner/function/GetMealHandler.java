@@ -9,21 +9,19 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
+import com.mealplanner.function.util.ApiGatewayRequest;
 import com.serverless.ApiGatewayResponse;
 
-public class GetMealHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
+public class GetMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetMealHandler.class);
 
     @Override
-    public ApiGatewayResponse handleRequest(final Map<String, Object> request, final Context context) {
+    public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
         try {
-            final Map<String, String> pathParameters = (Map<String, String>) request.get("pathParameters");
+            final Map<String, String> pathParameters = request.getPathParameters();
             final String id = pathParameters.get("id");
-
-            final Map<String, Object> requestContext = (Map<String, Object>) request.get("requestContext");
-            final Map<String, Object> identity = (Map<String, Object>) requestContext.get("identity");
-            final String userId = (String) identity.get("cognitoIdentityId");
+            final String userId = request.getRequestContext().getIdentity().getCognitoIdentityId();
 
             final MealRepository repository = new MealRepository();
             final Meal meal = repository.get(id, userId);
