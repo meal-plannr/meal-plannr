@@ -20,8 +20,13 @@ public class GetMealHandler implements RequestHandler<Map<String, Object>, ApiGa
         try {
             final Map<String, String> pathParameters = (Map<String, String>) request.get("pathParameters");
             final String id = pathParameters.get("id");
+
+            final Map<String, Object> requestContext = (Map<String, Object>) request.get("requestContext");
+            final Map<String, Object> identity = (Map<String, Object>) requestContext.get("identity");
+            final String userId = (String) identity.get("cognitoIdentityId");
+
             final MealRepository repository = new MealRepository();
-            final Meal meal = repository.get(id);
+            final Meal meal = repository.get(id, userId);
 
             return ApiGatewayResponse.builder()
                     .setStatusCode(200)

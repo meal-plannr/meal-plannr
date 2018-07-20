@@ -30,21 +30,22 @@ public class MealRepository {
         this.mapper = DynamoDbAdapter.getInstance().createDbMapper(mapperConfig);
     }
 
-    public Meal get(final String id) {
+    public Meal get(final String mealId, final String userId) {
         final Map<String, AttributeValue> attributeValues = new HashMap<>();
-        attributeValues.put(":v1", new AttributeValue().withS(id));
+        attributeValues.put(":mealId", new AttributeValue().withS(mealId));
+        attributeValues.put(":userId", new AttributeValue().withS(userId));
 
         final DynamoDBQueryExpression<Meal> queryExpression = new DynamoDBQueryExpression<Meal>()
-                .withKeyConditionExpression("mealId = :v1")
+                .withKeyConditionExpression("mealId = :mealId and userId = :userId")
                 .withExpressionAttributeValues(attributeValues);
 
         final PaginatedQueryList<Meal> result = mapper.query(Meal.class, queryExpression);
         if (result.size() == 1) {
             return result.get(0);
         } else if (result.size() == 0) {
-            throw new IllegalStateException(String.format("No Meal found for ID [%s]", id));
+            throw new IllegalStateException(String.format("No Meal found for ID [%s] and user ID [{}]", mealId, userId));
         } else {
-            throw new IllegalStateException(String.format("Multiple Meals found for ID [%s]", id));
+            throw new IllegalStateException(String.format("Multiple Meals found for ID [%s] and userID [{}]", mealId, userId));
         }
     }
 
