@@ -1,6 +1,7 @@
 package com.mealplanner.dal;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -47,6 +48,17 @@ public class MealRepository {
         } else {
             throw new IllegalStateException(String.format("Multiple Meals found for ID [%s] and userID [{}]", mealId, userId));
         }
+    }
+
+    public List<Meal> getAllMealsForUser(final String userId) {
+        final Map<String, AttributeValue> attributeValues = new HashMap<>();
+        attributeValues.put(":userId", new AttributeValue().withS(userId));
+
+        final DynamoDBQueryExpression<Meal> queryExpression = new DynamoDBQueryExpression<Meal>()
+                .withKeyConditionExpression("userId = :userId")
+                .withExpressionAttributeValues(attributeValues);
+
+        return mapper.query(Meal.class, queryExpression);
     }
 
     public void save(final Meal meal) {
