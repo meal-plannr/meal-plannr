@@ -1,5 +1,8 @@
 package com.mealplanner.function;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +32,12 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
             meal.setDescription(body.get("description").asText());
             repository.save(meal);
 
+            final Map<String, String> newHeaders = new HashMap<>();
+            newHeaders.put("Access-Control-Allow-Origin", "*");
+
             return ApiGatewayResponse.builder()
                     .setStatusCode(200)
+                    .setHeaders(newHeaders)
                     .setObjectBody(meal)
                     .build();
         } catch (final Exception e) {
