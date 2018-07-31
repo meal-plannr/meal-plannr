@@ -68,6 +68,14 @@ functions:
           method: put
           cors: true
           authorizer: aws_iam
+  deleteMeal:
+    handler: com.mealplanner.function.DeleteMealHandler
+    events:
+      - http:
+          path: /meals/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
 
 custom:
   # Our stage is based on what is passed in when running serverless

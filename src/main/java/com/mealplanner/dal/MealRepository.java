@@ -61,6 +61,13 @@ public class MealRepository {
         return mapper.query(Meal.class, queryExpression);
     }
 
+    public void delete(final String mealId, final String userId) {
+        final Meal meal = get(mealId, userId);
+        if (meal != null) {
+            mapper.delete(meal);
+        }
+    }
+
     public void save(final Meal meal) {
         LOGGER.info("Saving meal [{}]", meal);
         mapper.save(meal);
