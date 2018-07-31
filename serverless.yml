@@ -60,6 +60,14 @@ functions:
             method: get
             cors: true
             authorizer: aws_iam
+  updateMeal:
+    handler: com.mealplanner.function.PutMealHandler
+    events:
+      - http:
+          path: /meals/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
 
 custom:
   # Our stage is based on what is passed in when running serverless
