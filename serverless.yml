@@ -27,7 +27,7 @@ provider:
         - "Fn::GetAtt": [ MealsTable, Arn ]
 
 package:
-  artifact: target/meal-planner-api-dev.jar
+  artifact: target/aws-api-dev.jar
 
 functions:
   hello:
