@@ -38,17 +38,17 @@ jobs:
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
       # run tests!
-      - run: mvn clean package
+      - run:
+          name: Run tests and package jar
+          command: mvn clean package
 
-      - store_artifacts:
-          path: target/aws-api-dev.jar
+      - run:
+          name: Install Node and NPM
+          command: |
+            curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            $ sudo npm install npm --global
 
-  serverless-package:
-    docker:
-      - image: circleci/node:10.4.1
-    steps:
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
       - run:
           name: Install Serverless
           command: |
@@ -58,9 +58,5 @@ jobs:
           name: Serverless package
           command: sls package
 
-workflows:
-  version: 2
-  java_build_and_serverless_package:
-    jobs:
-      - build
-      - serverless-package
+      - store_artifacts:
+          path: target/aws-api-dev.jar
