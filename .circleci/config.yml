@@ -57,3 +57,10 @@ jobs:
       - run:
           name: Serverless package
           command: sls package
+
+workflows:
+  version: 2
+  java_build_and_serverless_package:
+    jobs:
+      - build
+      - serverless-package
