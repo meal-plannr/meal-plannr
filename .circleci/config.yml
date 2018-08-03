@@ -47,7 +47,7 @@ jobs:
           command: |
             curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
             sudo apt-get install -y nodejs
-            $ sudo npm install npm --global
+            sudo npm install npm --global
 
       - run:
           name: Install Serverless
