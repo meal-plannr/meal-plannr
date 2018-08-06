@@ -58,5 +58,8 @@ jobs:
           name: Serverless package
           command: sls package
 
-      - store_artifacts:
-          path: target/aws-api-dev.jar
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - target/aws-api-dev.jar
+            - .serverless
