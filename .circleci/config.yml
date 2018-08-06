@@ -59,7 +59,7 @@ jobs:
           command: sls package
 
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: ~/repo
           paths:
             - target/aws-api-dev.jar
             - .serverless
@@ -78,7 +78,7 @@ jobs:
             npm install
 
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/repo
 
       - run:
           name: Deploy to dev
