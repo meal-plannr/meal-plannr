@@ -68,7 +68,7 @@ jobs:
     docker:
       - image: circleci/node:10.8.0-jessie-browsers
 
-    working_directory: ~/meal-plannr
+    working_directory: ~/repo
 
     steps:
       - run:
@@ -81,8 +81,16 @@ jobs:
           at: ~/repo
 
       - run:
+          name: Print working directory
+          command: pwd
+
+      - run:
+          name: List contents of working directory
+          command: ls -l ~/repo
+
+      - run:
           name: Deploy to dev
-          command: sls deploy --package /tmp/workspace/.serverless
+          command: sls deploy --package ~/repo/.serverless
 
 workflows:
   version: 2
