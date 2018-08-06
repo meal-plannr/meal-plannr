@@ -63,3 +63,31 @@ jobs:
           paths:
             - target/aws-api-dev.jar
             - .serverless
+
+  dev-deploy:
+    docker:
+      - image: circleci/10.8.0-jessie-browsers
+
+    working_directory: ~/meal-plannr
+
+    steps:
+      - run:
+          name: Install Serverless
+          command: |
+            sudo npm i -g serverless
+            npm install
+
+      - attach_workspace:
+          at: /tmp/workspace
+
+      - run:
+          name: Deploy to dev
+          command: sls deploy --package /tmp/workspace/.serverless
+
+workflows:
+  version: 2
+  build-deploy:
+    - jobs:
+        - build
+        - deploy
+          - requires: build
