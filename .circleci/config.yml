@@ -72,6 +72,7 @@ jobs:
           paths:
             - target/aws-api-dev.jar
             - .serverless
+            - serverless.yml
 
   dev-deploy:
     docker:
