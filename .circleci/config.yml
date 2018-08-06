@@ -58,11 +58,15 @@ jobs:
           name: Serverless package
           command: sls package
 
+      - run:
+          name: List files in ~/repo
+          command: ls -l ~/repo
+
       - persist_to_workspace:
           root: ~/repo
           paths:
             - target/aws-api-dev.jar
-            - .serverless
+            - .serverless/*
 
   dev-deploy:
     docker:
