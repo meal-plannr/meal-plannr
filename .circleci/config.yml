@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: mealplannr/circleci-api-build:1.0
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -43,19 +43,6 @@ jobs:
           command: mvn clean package
 
       - run:
-          name: Install Node and NPM
-          command: |
-            curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-            sudo npm install npm --global
-
-      - run:
-          name: Install Serverless
-          command: |
-            sudo npm i -g serverless
-            npm install
-
-      - run:
           name: Print working directory
           command: pwd
 
@@ -76,16 +63,11 @@ jobs:
 
   dev-deploy:
     docker:
-      - image: circleci/node:10.8.0-jessie-browsers
+      - image: mealplannr/circleci-api-build:1.0
 
     working_directory: ~/repo
 
     steps:
-      - run:
-          name: Install Serverless
-          command: |
-            sudo npm i -g serverless
-            npm install
 
       - attach_workspace:
           at: ~/repo
