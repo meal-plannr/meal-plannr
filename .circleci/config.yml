@@ -54,6 +54,11 @@ jobs:
           command: |
             sudo npm i -g serverless
             npm install
+
+      - run:
+          name: Print working directory
+          command: pwd
+          
       - run:
           name: Serverless package
           command: sls package
