@@ -42,18 +42,6 @@ jobs:
           name: Run tests and package jar
           command: mvn clean package
 
-      - run:
-          name: Print working directory
-          command: pwd
-
-      #- run:
-          #name: Serverless package
-          #command: sls package
-
-      - run:
-          name: List files in ~/repo
-          command: ls -la ~/repo
-
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -74,16 +62,8 @@ jobs:
           at: ~/repo
 
       - run:
-          name: Print working directory
-          command: pwd
-
-      - run:
-          name: List contents of working directory
-          command: ls -la ~/repo
-
-      - run:
           name: Deploy to dev
-          command: sls deploy -v #--package ~/repo/.serverless
+          command: sls deploy -v
 
   prod-deploy:
     docker:
@@ -97,16 +77,8 @@ jobs:
           at: ~/repo
 
       - run:
-          name: Print working directory
-          command: pwd
-
-      - run:
-          name: List contents of working directory
-          command: ls -la ~/repo
-
-      - run:
           name: Deploy to Prod
-          command: sls deploy -v --stage prod #--package ~/repo/.serverless
+          command: sls deploy -v --stage prod
 
 workflows:
   version: 2
