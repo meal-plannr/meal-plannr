@@ -46,9 +46,9 @@ jobs:
           name: Print working directory
           command: pwd
 
-      - run:
-          name: Serverless package
-          command: sls package
+      #- run:
+          #name: Serverless package
+          #command: sls package
 
       - run:
           name: List files in ~/repo
@@ -58,9 +58,9 @@ jobs:
           root: ~/repo
           paths:
             - target/aws-api-dev.jar
-            - .serverless
-            - serverless.yml
-            - resources
+            #- .serverless
+            #- serverless.yml
+            #- resources
 
   dev-deploy:
     docker:
@@ -83,7 +83,7 @@ jobs:
 
       - run:
           name: Deploy to dev
-          command: sls deploy -v --package ~/repo/.serverless
+          command: sls deploy -v #--package ~/repo/.serverless
 
   prod-deploy:
     docker:
@@ -106,7 +106,7 @@ jobs:
 
       - run:
           name: Deploy to Prod
-          command: sls deploy -v --package ~/repo/.serverless --stage prod
+          command: sls deploy -v --stage prod #--package ~/repo/.serverless
 
 workflows:
   version: 2
