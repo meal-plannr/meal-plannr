@@ -58,9 +58,9 @@ jobs:
           root: ~/repo
           paths:
             - target/aws-api-dev.jar
-            #- .serverless
-            #- serverless.yml
-            #- resources
+            - .serverless
+            - serverless.yml
+            - resources
 
   dev-deploy:
     docker:
