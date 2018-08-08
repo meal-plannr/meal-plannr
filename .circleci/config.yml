@@ -60,6 +60,7 @@ jobs:
             - target/aws-api-dev.jar
             - .serverless
             - serverless.yml
+            - resources
 
   dev-deploy:
     docker:
@@ -82,7 +83,30 @@ jobs:
 
       - run:
           name: Deploy to dev
-          command: sls deploy --package ~/repo/.serverless
+          command: sls deploy -v --package ~/repo/.serverless
+
+  prod-deploy:
+    docker:
+      - image: mealplannr/circleci-api-build:1.0
+
+    working_directory: ~/repo
+
+    steps:
+
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Print working directory
+          command: pwd
+
+      - run:
+          name: List contents of working directory
+          command: ls -la ~/repo
+
+      - run:
+          name: Deploy to Prod
+          command: sls deploy -v --package ~/repo/.serverless --stage prod
 
 workflows:
   version: 2
@@ -92,3 +116,10 @@ workflows:
       - dev-deploy:
           requires:
             - build
+      - hold:
+          type: approval
+          requires:
+            - dev-deploy
+      - prod-deploy:
+          requires:
+            - hold
