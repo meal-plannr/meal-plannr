@@ -1,6 +1,7 @@
 package com.mealplanner.config;
 
-import com.mealplanner.dal.DynamoDbAdapter;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 
 import dagger.Module;
 import dagger.Provides;
@@ -8,9 +9,12 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    @Provides
-    public DynamoDbAdapter providesDynamoDbAdapter() {
-        return new DynamoDbAdapter();
-    }
+    private static final String AWS_REGION = System.getenv("region");
 
+    @Provides
+    public AmazonDynamoDB providesAmazonDynamoDB() {
+        return AmazonDynamoDBClientBuilder.standard()
+                .withRegion(AWS_REGION)
+                .build();
+    }
 }
