@@ -3,6 +3,8 @@ package com.mealplanner.function;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +18,13 @@ public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteMealHandler.class);
 
+    private final MealRepository repository;
+
+    @Inject
+    public DeleteMealHandler(final MealRepository mealRepository) {
+        this.repository = mealRepository;
+    }
+
     @Override
     public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
         try {
@@ -23,7 +32,6 @@ public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
             final String id = pathParameters.get("id");
             final String userId = request.getRequestContext().getIdentity().getCognitoIdentityId();
 
-            final MealRepository repository = new MealRepository();
             repository.delete(id, userId);
 
             final Map<String, String> newHeaders = new HashMap<>();

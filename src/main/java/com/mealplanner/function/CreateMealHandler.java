@@ -3,6 +3,8 @@ package com.mealplanner.function;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +21,13 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMealHandler.class);
 
+    private final MealRepository mealRepository;
+
+    @Inject
+    public CreateMealHandler(final MealRepository mealRepository) {
+        this.mealRepository = mealRepository;
+    }
+
     @Override
     public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
         try {
@@ -26,11 +35,10 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
             LOGGER.info("User ID [{}]", userId);
 
             final JsonNode body = new ObjectMapper().readTree(request.getBody());
-            final MealRepository repository = new MealRepository();
             final Meal meal = new Meal();
             meal.setUserId(userId);
             meal.setDescription(body.get("description").asText());
-            repository.save(meal);
+            mealRepository.save(meal);
 
             final Map<String, String> newHeaders = new HashMap<>();
             newHeaders.put("Access-Control-Allow-Origin", "*");

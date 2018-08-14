@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +20,17 @@ public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGa
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ListMealsHandler.class);
 
+    private final MealRepository repository;
+
+    @Inject
+    public ListMealsHandler(final MealRepository mealRepository) {
+        this.repository = mealRepository;
+    }
+
     @Override
     public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
         try {
             final String userId = request.getRequestContext().getIdentity().getCognitoIdentityId();
-            final MealRepository repository = new MealRepository();
             final List<Meal> meals = repository.getAllMealsForUser(userId);
 
             final Map<String, String> newHeaders = new HashMap<>();

@@ -15,7 +15,7 @@ public class DynamoDbAdapter {
 
     private final AmazonDynamoDB client;
 
-    private DynamoDbAdapter() {
+    public DynamoDbAdapter() {
         LOGGER.info("AWS_REGION value: [{}]", AWS_REGION);
 
         this.client = AmazonDynamoDBClientBuilder.standard()
@@ -25,13 +25,5 @@ public class DynamoDbAdapter {
 
     public DynamoDBMapper createDbMapper(final DynamoDBMapperConfig mapperConfig) {
         return new DynamoDBMapper(client, mapperConfig);
-    }
-
-    public static DynamoDbAdapter getInstance() {
-        return DynamoDbAdapterHolder.INSTANCE;
-    }
-
-    private static class DynamoDbAdapterHolder {
-        public static DynamoDbAdapter INSTANCE = new DynamoDbAdapter();
     }
 }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,14 +23,15 @@ public class MealRepository {
 
     private final DynamoDBMapper mapper;
 
-    public MealRepository() {
+    @Inject
+    public MealRepository(final DynamoDbAdapter dynamoDbAdapter) {
         LOGGER.info("MEALS_TABLE_NAME value: [{}]", MEALS_TABLE_NAME);
 
         final DynamoDBMapperConfig mapperConfig = DynamoDBMapperConfig.builder()
                 .withTableNameOverride(new DynamoDBMapperConfig.TableNameOverride(MEALS_TABLE_NAME))
                 .build();
 
-        this.mapper = DynamoDbAdapter.getInstance().createDbMapper(mapperConfig);
+        this.mapper = dynamoDbAdapter.createDbMapper(mapperConfig);
     }
 
     public Meal get(final String mealId, final String userId) {
