@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,17 +16,15 @@ import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.serverless.ApiGatewayResponse;
 
-@Singleton
 public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ListMealsHandler.class);
-    private static final AppComponent APP_COMPONENT = DaggerAppComponent.builder().build();
 
     private final MealRepository repository;
 
-    @Inject
-    public ListMealsHandler(final MealRepository mealRepository) {
-        this.repository = mealRepository;
+    public ListMealsHandler() {
+        final AppComponent appComponent = DaggerAppComponent.builder().build();
+        this.repository = appComponent.getMealRepository();
     }
 
     @Override
