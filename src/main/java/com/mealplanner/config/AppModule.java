@@ -17,7 +17,6 @@ public class AppModule {
     @Singleton
     public AmazonDynamoDB providesAmazonDynamoDB() {
         return AmazonDynamoDBClientBuilder.standard()
-                //.withRegion(AWS_REGION != null ? AWS_REGION : "eu-west-2")
                 .withRegion(AWS_REGION)
                 .build();
     }
