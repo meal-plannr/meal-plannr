@@ -4,8 +4,6 @@ import javax.inject.Singleton;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.mealplanner.dal.DynamoDbAdapter;
-import com.mealplanner.dal.MealRepository;
 
 import dagger.Module;
 import dagger.Provides;
@@ -19,6 +17,7 @@ public class AppModule {
     @Singleton
     public AmazonDynamoDB providesAmazonDynamoDB() {
         return AmazonDynamoDBClientBuilder.standard()
+                //.withRegion(AWS_REGION != null ? AWS_REGION : "eu-west-2")
                 .withRegion(AWS_REGION)
                 .build();
     }
@@ -37,12 +36,4 @@ public class AppModule {
     //    public String provideAwsRegion() {
     //        return System.getenv("region");
     //    }
-
-    public DynamoDbAdapter getDynamoDbAdapter(final AmazonDynamoDB client) {
-        return new DynamoDbAdapter(client);
-    }
-
-    public MealRepository getMealRepository(final DynamoDbAdapter dynamoDbAdapter) {
-        return new MealRepository(dynamoDbAdapter);
-    }
 }

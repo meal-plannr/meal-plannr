@@ -6,13 +6,15 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Rule;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,17 +31,8 @@ public class ListMealsHandlerTest {
 
     private static final String USER_ID = "user1";
 
-    //    @Rule
-    //    public DaggerMockRule<AppComponent> rule = new DaggerMockRule<>(AppComponent.class, new AppModule())
-    //            .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
-    //                @Override
-    //                public void setComponent(final AppComponent component) {
-    //                    mealRepository = component.getMealRepository();
-    //                }
-    //            });
-
-    @Mock
-    private AmazonDynamoDB amazonDynamoDB;
+    @Rule
+    public static final EnvironmentVariables ENVIRONMENT_VARIABLES = new EnvironmentVariables();
 
     @Mock
     private MealRepository mealRepository;
@@ -58,6 +51,11 @@ public class ListMealsHandlerTest {
 
     @InjectMocks
     private ListMealsHandler handler;
+
+    @BeforeAll
+    public static void setEnvVars() {
+        ENVIRONMENT_VARIABLES.set("region", "eu-west-2");
+    }
 
     @Test
     public void all_users_meals_are_returned() throws Exception {

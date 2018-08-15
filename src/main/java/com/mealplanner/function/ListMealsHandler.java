@@ -21,14 +21,13 @@ import com.serverless.ApiGatewayResponse;
 public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ListMealsHandler.class);
-    private static final AppComponent component = DaggerAppComponent.builder().build();
 
     @Inject
     MealRepository repository;
 
     public ListMealsHandler() {
-        //final AppComponent component = DaggerAppComponent.builder().build();
-        //this.repository = component.getMealRepository();
+        final AppComponent component = DaggerAppComponent.builder().build();
+        this.repository = component.getMealRepository();
     }
 
     @Override
