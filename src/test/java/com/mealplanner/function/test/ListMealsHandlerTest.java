@@ -15,9 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mealplanner.config.AppComponent;
+import com.mealplanner.config.AppModule;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.ListMealsHandler;
@@ -26,6 +29,9 @@ import com.mealplanner.function.util.ApiGatewayResponse;
 import com.mealplanner.function.util.Identity;
 import com.mealplanner.function.util.RequestContext;
 
+import it.cosenonjaviste.daggermock.DaggerMockRule;
+import it.cosenonjaviste.daggermock.DaggerMockRule.ComponentSetter;
+
 @ExtendWith(MockitoExtension.class)
 public class ListMealsHandlerTest {
 
@@ -33,6 +39,19 @@ public class ListMealsHandlerTest {
 
     @Rule
     public static final EnvironmentVariables ENVIRONMENT_VARIABLES = new EnvironmentVariables();
+
+    @Rule
+    public DaggerMockRule<AppComponent> rule = new DaggerMockRule<>(AppComponent.class, new AppModule())
+            .set(new ComponentSetter<AppComponent>() {
+
+                @Override
+                public void setComponent(final AppComponent component) {
+                    component.inject(handler);
+                }
+            });
+
+    @Mock
+    private AmazonDynamoDB amazonDynamoDB;
 
     @Mock
     private MealRepository mealRepository;
