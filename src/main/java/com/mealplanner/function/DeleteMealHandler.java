@@ -12,7 +12,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.function.util.ApiGatewayRequest;
-import com.serverless.ApiGatewayResponse;
+import com.mealplanner.function.util.ApiGatewayResponse;
 
 public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 

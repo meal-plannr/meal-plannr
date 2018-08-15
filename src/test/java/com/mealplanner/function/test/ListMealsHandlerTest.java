@@ -22,9 +22,9 @@ import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.ListMealsHandler;
 import com.mealplanner.function.util.ApiGatewayRequest;
+import com.mealplanner.function.util.ApiGatewayResponse;
 import com.mealplanner.function.util.Identity;
 import com.mealplanner.function.util.RequestContext;
-import com.serverless.ApiGatewayResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class ListMealsHandlerTest {

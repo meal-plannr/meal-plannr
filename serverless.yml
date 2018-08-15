@@ -30,12 +30,6 @@ package:
   artifact: target/aws-api-dev.jar
 
 functions:
-  hello:
-    handler: com.serverless.Handler
-    events:
-      - http:
-          path: say/hello
-          method: get
   createMeal:
     handler: com.mealplanner.function.CreateMealHandler
     events:

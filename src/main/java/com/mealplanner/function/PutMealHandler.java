@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
-import com.serverless.ApiGatewayResponse;
+import com.mealplanner.function.util.ApiGatewayResponse;
 
 public class PutMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 

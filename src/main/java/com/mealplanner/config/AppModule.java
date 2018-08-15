@@ -20,19 +20,4 @@ public class AppModule {
                 .withRegion(AWS_REGION)
                 .build();
     }
-
-    //    @Provides
-    //    @Singleton
-    //    public AmazonDynamoDB providesAmazonDynamoDB(@Named("awsRegion") final String awsRegion) {
-    //        return AmazonDynamoDBClientBuilder.standard()
-    //                .withRegion(awsRegion)
-    //                .build();
-    //    }
-    //
-    //    @Provides
-    //    @Named("awsRegion")
-    //    @Singleton
-    //    public String provideAwsRegion() {
-    //        return System.getenv("region");
-    //    }
 }
