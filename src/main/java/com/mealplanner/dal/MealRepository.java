@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -25,7 +24,7 @@ public class MealRepository {
 
     private final DynamoDBMapper mapper;
 
-    @Inject
+    //@Inject
     public MealRepository(final DynamoDbAdapter dynamoDbAdapter) {
         LOGGER.info("MEALS_TABLE_NAME value: [{}]", MEALS_TABLE_NAME);
 

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +23,17 @@ public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGa
     private static final Logger LOGGER = LoggerFactory.getLogger(ListMealsHandler.class);
     private static final AppComponent APP_COMPONENT = DaggerAppComponent.builder().build();
 
+    //@Inject
     private final MealRepository repository;
 
-    public ListMealsHandler() {
-        this.repository = APP_COMPONENT.getMealRepository();
+    //    public ListMealsHandler() {
+    //        final AppComponent component = DaggerAppComponent.builder().build();
+    //        //this.repository = component.getMealRepository();
+    //    }
+
+    @Inject
+    public ListMealsHandler(final MealRepository repository) {
+        this.repository = repository;
     }
 
     @Override
