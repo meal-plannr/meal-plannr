@@ -1,18 +1,15 @@
 package com.mealplanner.dal;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 
-@Singleton
+// @Singleton
 public class DynamoDbAdapter {
 
     private final AmazonDynamoDB client;
 
-    @Inject
+    //@Inject
     public DynamoDbAdapter(final AmazonDynamoDB client) {
         this.client = client;
     }
