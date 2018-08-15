@@ -5,6 +5,10 @@
 version: 2
 jobs:
   build:
+    branches:
+      only:
+        - master
+
     docker:
       # specify the version you desire here
       - image: mealplannr/circleci-api-build:1.0
