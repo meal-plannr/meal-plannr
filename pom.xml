@@ -99,6 +99,13 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>mulesoft</id>
+            <url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <!-- Using the Apache Maven Shade plugin to package the jar "This 
