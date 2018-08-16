@@ -6,8 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Rule;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,8 +29,21 @@ public class ListMealsHandlerTest {
 
     private static final String USER_ID = "user1";
 
-    @Rule
-    public static final EnvironmentVariables ENVIRONMENT_VARIABLES = new EnvironmentVariables();
+    //    @Rule
+    //    public static final EnvironmentVariables ENVIRONMENT_VARIABLES = new EnvironmentVariables();
+    //
+    //    @Rule
+    //    public DaggerMockRule<AppComponent> rule = new DaggerMockRule<>(AppComponent.class, new AppModule())
+    //            .set(new ComponentSetter<AppComponent>() {
+    //
+    //                @Override
+    //                public void setComponent(final AppComponent component) {
+    //                    component.inject(handler);
+    //                }
+    //            });
+
+    //    @Mock
+    //    private AmazonDynamoDB amazonDynamoDB;
 
     @Mock
     private MealRepository mealRepository;
@@ -54,7 +65,7 @@ public class ListMealsHandlerTest {
 
     @BeforeAll
     public static void setEnvVars() {
-        ENVIRONMENT_VARIABLES.set("region", "eu-west-2");
+        //ENVIRONMENT_VARIABLES.set("region", "eu-west-2");
     }
 
     @Test

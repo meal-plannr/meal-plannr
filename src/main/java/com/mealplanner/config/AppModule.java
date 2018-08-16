@@ -4,6 +4,9 @@ import javax.inject.Singleton;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import com.mealplanner.dal.DynamoDbAdapter;
+import com.mealplanner.dal.MealRepository;
+import com.mealplanner.function.ListMealsHandler;
 
 import dagger.Module;
 import dagger.Provides;
@@ -19,5 +22,23 @@ public class AppModule {
         return AmazonDynamoDBClientBuilder.standard()
                 .withRegion(AWS_REGION)
                 .build();
+    }
+
+    @Provides
+    @Singleton
+    public DynamoDbAdapter providesDynamoDbAdapter(final AmazonDynamoDB client) {
+        return new DynamoDbAdapter(client);
+    }
+
+    @Provides
+    @Singleton
+    public MealRepository providesMealRepository(final DynamoDbAdapter dynamoDbAdapter) {
+        return new MealRepository(dynamoDbAdapter);
+    }
+
+    @Provides
+    @Singleton
+    public ListMealsHandler providesListMealsHandler() {
+        return new ListMealsHandler();
     }
 }
