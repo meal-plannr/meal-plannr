@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.mealplanner.dal.DynamoDbAdapter;
 import com.mealplanner.dal.MealRepository;
+import com.mealplanner.function.ListMealsHandler;
 
 import dagger.Module;
 import dagger.Provides;
@@ -33,5 +34,11 @@ public class AppModule {
     @Singleton
     public MealRepository providesMealRepository(final DynamoDbAdapter dynamoDbAdapter) {
         return new MealRepository(dynamoDbAdapter);
+    }
+
+    @Provides
+    @Singleton
+    public ListMealsHandler providesListMealsHandler() {
+        return new ListMealsHandler();
     }
 }

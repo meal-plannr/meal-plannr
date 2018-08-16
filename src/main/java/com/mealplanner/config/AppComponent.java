@@ -2,7 +2,7 @@ package com.mealplanner.config;
 
 import javax.inject.Singleton;
 
-import com.mealplanner.function.ListMealsHandler;
+import com.mealplanner.app.MealPlannrApp;
 
 import dagger.Component;
 
@@ -10,5 +10,5 @@ import dagger.Component;
 @Component(modules = { AppModule.class })
 public interface AppComponent {
 
-    void inject(ListMealsHandler handler);
+    void inject(MealPlannrApp app);
 }
