@@ -12,6 +12,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <docker.maven.plugin.version>0.26.1</docker.maven.plugin.version>
+        <dynamodblocal.version>1.11.119</dynamodblocal.version>
+        <aws.sdk.version>2.0.0-preview-11</aws.sdk.version>
     </properties>
 
     <dependencies>
@@ -44,6 +47,16 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
             <version>1.11.368</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>dynamodb</artifactId>
+            <version>${aws.sdk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>apache-client</artifactId>
+            <version>${aws.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>io.symphonia</groupId>
@@ -165,6 +178,9 @@
                         <exclude>**/Abstract*.java</exclude>
                         <exclude>**/*Test.java</exclude>
                     </excludes>
+                    <environmentVariables>
+                        <region>eu-west-1</region>
+                    </environmentVariables>
                 </configuration>
                 <executions>
                     <execution>
@@ -173,6 +189,46 @@
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-it-database</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>amazon/dynamodb-local:${dynamodblocal.version}</name>
+                                    <alias>it-database</alias>
+                                    <run>
+                                        <ports>
+                                            <port>8000:8000</port>
+                                        </ports>
+                                        <wait>
+                                            <http>
+                                                <url>http://localhost:8000/shell/</url>
+                                            </http>
+                                            <time>5000</time>
+                                        </wait>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-it-database</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>

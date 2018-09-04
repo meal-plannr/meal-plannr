@@ -1,21 +1,16 @@
 package com.mealplanner.dal.test;
 
-import javax.inject.Inject;
-
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
+import com.mealplanner.test.IntegrationTestBase;
 
-public class MealRepositoryIT {
-
-    @Inject
-    MealRepository mealRepository;
+public class MealRepositoryDynamoIT extends IntegrationTestBase {
 
     @Test
     public void meal_id_and_user_id_are_used_to_retrieve_a_meal() {
-        final Meal meal = mealRepository.get("m1", "u1");
+        final Meal meal = mealRepositoryDynamo.get("m1", "u1");
         Assertions.assertThat(meal).isNull();
     }
 
