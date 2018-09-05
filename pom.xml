@@ -109,6 +109,12 @@
             <artifactId>system-rules</artifactId>
             <version>1.17.2</version>
         </dependency>
+        <dependency>
+            <groupId>cloud.localstack</groupId>
+            <artifactId>localstack-utils</artifactId>
+            <version>0.1.14</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -180,7 +186,7 @@
                     </excludes>
                     <environmentVariables>
                         <!-- <region>eu-west-1</region> -->
-                        <ENDPOINT_OVERRIDE>http://localhost:8000</ENDPOINT_OVERRIDE>
+                        <ENDPOINT_OVERRIDE>http://localhost:4569</ENDPOINT_OVERRIDE>
                     </environmentVariables>
                 </configuration>
                 <executions>
@@ -190,46 +196,6 @@
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker.maven.plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>prepare-it-database</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                        <configuration>
-                            <images>
-                                <image>
-                                    <name>amazon/dynamodb-local:${dynamodblocal.version}</name>
-                                    <alias>it-database</alias>
-                                    <run>
-                                        <ports>
-                                            <port>8000:8000</port>
-                                        </ports>
-                                        <wait>
-                                            <http>
-                                                <url>http://localhost:8000/shell/</url>
-                                            </http>
-                                            <time>5000</time>
-                                        </wait>
-                                    </run>
-                                </image>
-                            </images>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>remove-it-database</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
                         </goals>
                     </execution>
                 </executions>
