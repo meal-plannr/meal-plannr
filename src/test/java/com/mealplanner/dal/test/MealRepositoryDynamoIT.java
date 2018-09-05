@@ -11,7 +11,7 @@ public class MealRepositoryDynamoIT extends IntegrationTestBase {
     @Test
     public void meal_id_and_user_id_are_used_to_retrieve_a_meal() {
         final Meal meal = mealRepositoryDynamo.get("m1", "u1");
-        Assertions.assertThat(meal).isNull();
+        Assertions.assertThat(meal).isNotNull();
     }
 
 }

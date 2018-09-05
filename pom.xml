@@ -179,7 +179,8 @@
                         <exclude>**/*Test.java</exclude>
                     </excludes>
                     <environmentVariables>
-                        <region>eu-west-1</region>
+                        <!-- <region>eu-west-1</region> -->
+                        <ENDPOINT_OVERRIDE>http://localhost:8000</ENDPOINT_OVERRIDE>
                     </environmentVariables>
                 </configuration>
                 <executions>
