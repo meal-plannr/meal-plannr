@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -47,16 +48,6 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
             <version>1.11.368</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>dynamodb</artifactId>
-            <version>${aws.sdk.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>apache-client</artifactId>
-            <version>${aws.sdk.version}</version>
         </dependency>
         <dependency>
             <groupId>io.symphonia</groupId>
@@ -115,6 +106,17 @@
             <version>0.1.14</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility-proxy</artifactId>
+            <version>3.1.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -126,8 +128,10 @@
 
     <build>
         <plugins>
-            <!-- Using the Apache Maven Shade plugin to package the jar "This plugin provides the capability to package the artifact in an uber-jar, including its 
-                dependencies and to shade - i.e. rename - the packages of some of the dependencies." Link: https://maven.apache.org/plugins/maven-shade-plugin/ -->
+            <!-- Using the Apache Maven Shade plugin to package the jar "This 
+                plugin provides the capability to package the artifact in an uber-jar, including 
+                its dependencies and to shade - i.e. rename - the packages of some of the 
+                dependencies." Link: https://maven.apache.org/plugins/maven-shade-plugin/ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

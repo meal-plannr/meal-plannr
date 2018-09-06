@@ -1,31 +1,24 @@
 package com.mealplanner.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
+import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
+import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
+import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
+import com.amazonaws.services.dynamodbv2.model.KeyType;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
+import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.mealplanner.dal.MealRepositoryDynamo;
 
 import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
-import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
-import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
-import software.amazon.awssdk.services.dynamodb.model.KeyType;
-import software.amazon.awssdk.services.dynamodb.model.ListTablesRequest;
-import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
-import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
 
 @ExtendWith(LocalstackDockerExtension.class)
 @LocalstackDockerProperties(services = { "dynamodb:4569" })
@@ -37,11 +30,11 @@ public class IntegrationTestBase {
     protected MealRepositoryDynamo mealRepositoryDynamo;
 
     @Inject
-    DynamoDbClient dynamoDb;
+    @Named("mealsTableName")
+    protected String mealsTableName;
 
     @Inject
-    @Named("mealsTableName")
-    String mealsTableName;
+    protected AmazonDynamoDB amazonDynamoDb;
 
     public IntegrationTestBase() {
         appComponent = DaggerAppTestComponent.builder().build();
@@ -49,64 +42,34 @@ public class IntegrationTestBase {
     }
 
     @BeforeEach
-    public void setup() {
-        final boolean tableExists = dynamoDb.listTables(ListTablesRequest.builder().build()).tableNames().stream()
-                .filter(tableName -> tableName.equals(mealsTableName)).count() > 0;
-
-        if (tableExists) {
-            dynamoDb.deleteTable(DeleteTableRequest.builder()
-                    .tableName(mealsTableName)
-                    .build());
-        }
-
-        dynamoDb.createTable(CreateTableRequest.builder()
-                .tableName(mealsTableName)
-                .keySchema(
-                        KeySchemaElement.builder()
-                                .keyType(KeyType.HASH)
-                                .attributeName("userId")
-                                .build(),
-                        KeySchemaElement.builder()
-                                .keyType(KeyType.RANGE)
-                                .attributeName("mealId")
-                                .build())
-                .attributeDefinitions(
-                        AttributeDefinition.builder()
-                                .attributeName("userId")
-                                .attributeType(ScalarAttributeType.S)
-                                .build(),
-                        AttributeDefinition.builder()
-                                .attributeName("mealId")
-                                .attributeType(ScalarAttributeType.S)
-                                .build())
-                .provisionedThroughput(ProvisionedThroughput.builder()
-                        .readCapacityUnits(1L)
-                        .writeCapacityUnits(1L)
-                        .build())
-                .build());
-
-        final Map<String, AttributeValue> mealMap = new HashMap<>();
-        mealMap.put("userId", AttributeValue.builder().s("u1").build());
-        mealMap.put("mealId", AttributeValue.builder().s("m1").build());
-
-        int attempts = 0;
-        while (attempts < 10) {
-            try {
-                dynamoDb.putItem(PutItemRequest.builder()
-                        .tableName(mealsTableName)
-                        .item(mealMap)
-                        .build());
-                return;
-            } catch (final ResourceNotFoundException rnfe) {
-                attempts++;
-            }
-        }
+    public void setup() throws Exception {
+        recreateMealsTable();
     }
 
-    @AfterEach
-    public void teardown() {
-        dynamoDb.deleteTable(DeleteTableRequest.builder()
-                .tableName(mealsTableName)
-                .build());
+    private void recreateMealsTable() throws Exception {
+        TableUtils.deleteTableIfExists(amazonDynamoDb, new DeleteTableRequest()
+                .withTableName(mealsTableName));
+
+        TableUtils.createTableIfNotExists(amazonDynamoDb, new CreateTableRequest()
+                .withTableName(mealsTableName)
+                .withKeySchema(
+                        new KeySchemaElement()
+                                .withKeyType(KeyType.HASH)
+                                .withAttributeName("userId"),
+                        new KeySchemaElement()
+                                .withKeyType(KeyType.RANGE)
+                                .withAttributeName("mealId"))
+                .withAttributeDefinitions(
+                        new AttributeDefinition()
+                                .withAttributeName("userId")
+                                .withAttributeType(ScalarAttributeType.S),
+                        new AttributeDefinition()
+                                .withAttributeName("mealId")
+                                .withAttributeType(ScalarAttributeType.S))
+                .withProvisionedThroughput(new ProvisionedThroughput()
+                        .withReadCapacityUnits(1L)
+                        .withWriteCapacityUnits(1L)));
+
+        TableUtils.waitUntilActive(amazonDynamoDb, mealsTableName, 5000, 100);
     }
 }

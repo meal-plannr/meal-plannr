@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mealplanner.dal.MealRepository;
+import com.mealplanner.dal.MealRepositoryDynamo;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.ListMealsHandler;
 import com.mealplanner.function.util.ApiGatewayRequest;
@@ -35,7 +35,7 @@ public class ListMealsHandlerTest {
     public static final EnvironmentVariables ENVIRONMENT_VARIABLES = new EnvironmentVariables();
 
     @Mock
-    private MealRepository mealRepository;
+    private MealRepositoryDynamo mealRepository;
 
     @Mock
     private ApiGatewayRequest request;
