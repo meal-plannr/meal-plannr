@@ -13,7 +13,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.mealplanner.config.AppComponent;
 import com.mealplanner.config.DaggerAppComponent;
-import com.mealplanner.dal.MealRepositoryDynamo;
+import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.mealplanner.function.util.ApiGatewayResponse;
@@ -23,7 +23,7 @@ public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGa
     private static final Logger LOGGER = LoggerFactory.getLogger(ListMealsHandler.class);
 
     @Inject
-    MealRepositoryDynamo repository;
+    MealRepository repository;
 
     public ListMealsHandler() {
         final AppComponent component = DaggerAppComponent.builder().build();

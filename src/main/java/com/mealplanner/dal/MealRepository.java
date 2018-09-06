@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -21,19 +21,12 @@ import com.mealplanner.domain.Meal;
 public class MealRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MealRepository.class);
-    private static final String MEALS_TABLE_NAME = System.getenv("tableName");
 
     private final DynamoDBMapper mapper;
 
     @Inject
-    public MealRepository(final DynamoDbAdapter dynamoDbAdapter) {
-        LOGGER.info("MEALS_TABLE_NAME value: [{}]", MEALS_TABLE_NAME);
-
-        final DynamoDBMapperConfig mapperConfig = DynamoDBMapperConfig.builder()
-                .withTableNameOverride(new DynamoDBMapperConfig.TableNameOverride(MEALS_TABLE_NAME))
-                .build();
-
-        this.mapper = dynamoDbAdapter.createDbMapper(mapperConfig);
+    public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper) {
+        this.mapper = mapper;
     }
 
     public Meal get(final String mealId, final String userId) {

@@ -3,17 +3,15 @@ package com.mealplanner.dal.test;
 import static org.mockito.Mockito.when;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
-import com.mealplanner.dal.DynamoDbAdapter;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 
@@ -24,9 +22,6 @@ public class MealRepositoryTest {
     private static final String USER_ID = "user1";
 
     @Mock
-    private DynamoDbAdapter dynamoDbAdapter;
-
-    @Mock
     private DynamoDBMapper mapper;
 
     @Mock
@@ -35,14 +30,8 @@ public class MealRepositoryTest {
     @Mock
     private Meal mockMeal;
 
+    @InjectMocks
     private MealRepository mealRepository;
-
-    @BeforeEach
-    public void setup() {
-        when(dynamoDbAdapter.createDbMapper(Mockito.any(DynamoDBMapperConfig.class))).thenReturn(mapper);
-
-        mealRepository = new MealRepository(dynamoDbAdapter);
-    }
 
     @Test
     public void meal_is_returned_if_one_result_is_found() {

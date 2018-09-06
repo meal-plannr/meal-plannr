@@ -15,7 +15,7 @@ import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
-import com.mealplanner.dal.MealRepositoryDynamo;
+import com.mealplanner.dal.MealRepository;
 
 import cloud.localstack.docker.LocalstackDockerExtension;
 import cloud.localstack.docker.annotation.LocalstackDockerProperties;
@@ -27,7 +27,7 @@ public class IntegrationTestBase {
     private final AppTestComponent appComponent;
 
     @Inject
-    protected MealRepositoryDynamo mealRepositoryDynamo;
+    protected MealRepository mealRepository;
 
     @Inject
     @Named("mealsTableName")
