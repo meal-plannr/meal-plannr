@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.mealplanner.config.AppComponent;
+import com.mealplanner.config.DaggerAppComponent;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.mealplanner.function.util.ApiGatewayResponse;
@@ -18,11 +20,12 @@ public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteMealHandler.class);
 
-    private final MealRepository repository;
-
     @Inject
-    public DeleteMealHandler(final MealRepository mealRepository) {
-        this.repository = mealRepository;
+    MealRepository repository;
+
+    public DeleteMealHandler() {
+        final AppComponent component = DaggerAppComponent.builder().build();
+        component.inject(this);
     }
 
     @Override

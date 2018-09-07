@@ -12,6 +12,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mealplanner.config.AppComponent;
+import com.mealplanner.config.DaggerAppComponent;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
@@ -21,11 +23,12 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMealHandler.class);
 
-    private final MealRepository mealRepository;
-
     @Inject
-    public CreateMealHandler(final MealRepository mealRepository) {
-        this.mealRepository = mealRepository;
+    MealRepository mealRepository;
+
+    public CreateMealHandler() {
+        final AppComponent component = DaggerAppComponent.builder().build();
+        component.inject(this);
     }
 
     @Override
