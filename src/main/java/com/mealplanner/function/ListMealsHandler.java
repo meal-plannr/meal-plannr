@@ -27,7 +27,7 @@ public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGa
 
     public ListMealsHandler() {
         final AppComponent component = DaggerAppComponent.builder().build();
-        this.repository = component.getMealRepository();
+        component.inject(this);
     }
 
     @Override

@@ -55,6 +55,7 @@ public class ListMealsHandlerTest {
     @BeforeAll
     public static void setEnvVars() {
         ENVIRONMENT_VARIABLES.set("region", "eu-west-2");
+        ENVIRONMENT_VARIABLES.set("tableName", "meals");
     }
 
     @Test

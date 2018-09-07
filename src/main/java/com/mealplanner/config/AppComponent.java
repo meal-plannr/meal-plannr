@@ -2,16 +2,13 @@ package com.mealplanner.config;
 
 import javax.inject.Singleton;
 
-import com.mealplanner.dal.DynamoDbAdapter;
-import com.mealplanner.dal.MealRepository;
+import com.mealplanner.function.ListMealsHandler;
 
 import dagger.Component;
 
 @Singleton
-@Component(modules = { AppModule.class })
+@Component(modules = { InfrastructureModule.class, DaoModule.class })
 public interface AppComponent {
 
-    DynamoDbAdapter getDynamoDbAdapter();
-
-    MealRepository getMealRepository();
+    void inject(ListMealsHandler handler);
 }
