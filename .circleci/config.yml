@@ -40,7 +40,7 @@ jobs:
       # run tests!
       - run:
           name: Run tests and package jar
-          command: mvn clean package
+          command: mvn clean verify
 
       - persist_to_workspace:
           root: ~/repo
