@@ -8,8 +8,12 @@ jobs:
     docker:
       # specify the version you desire here
       - image: mealplannr/circleci-api-build:1.1
+        environment:
+          MAVEN_OPTS: -Xmx3200m
 
       - image: localstack/localstack
+        environment:
+          SERVICES: dynamodb
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -17,11 +21,6 @@ jobs:
       # - image: circleci/postgres:9.4
 
     working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      MAVEN_OPTS: -Xmx3200m
-      SERVICES: dynamodb
 
     steps:
       - checkout
