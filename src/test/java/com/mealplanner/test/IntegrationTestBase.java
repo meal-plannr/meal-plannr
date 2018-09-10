@@ -16,9 +16,6 @@ import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.mealplanner.dal.MealRepository;
 
-// @ExtendWith(LocalstackDockerExtension.class)
-// @LocalstackDockerProperties(services = { "dynamodb:4569" })
-// @ExtendWith(LocalstackExtension.class)
 public class IntegrationTestBase {
 
     private final AppTestComponent appComponent;
