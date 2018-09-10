@@ -7,7 +7,9 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: mealplannr/circleci-api-build:1.0
+      - image: mealplannr/circleci-api-build:1.1
+
+      - image: localstack/localstack
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -19,6 +21,7 @@ jobs:
     environment:
       # Customize the JVM maximum heap limit
       MAVEN_OPTS: -Xmx3200m
+      SERVICES: dynamobd
 
     steps:
       - checkout
@@ -36,8 +39,6 @@ jobs:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-
-      - setup_remote_docker
 
       # run tests!
       - run:

@@ -4,7 +4,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
@@ -17,11 +16,9 @@ import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.mealplanner.dal.MealRepository;
 
-import cloud.localstack.docker.LocalstackDockerExtension;
-import cloud.localstack.docker.annotation.LocalstackDockerProperties;
-
-@ExtendWith(LocalstackDockerExtension.class)
-@LocalstackDockerProperties(services = { "dynamodb:4569" })
+// @ExtendWith(LocalstackDockerExtension.class)
+// @LocalstackDockerProperties(services = { "dynamodb:4569" })
+// @ExtendWith(LocalstackExtension.class)
 public class IntegrationTestBase {
 
     private final AppTestComponent appComponent;
