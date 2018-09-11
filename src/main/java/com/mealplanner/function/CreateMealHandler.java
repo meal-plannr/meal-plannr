@@ -21,6 +21,8 @@ import com.mealplanner.function.util.ApiGatewayResponse;
 
 public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
+    public static final String ERROR_MESSAGE_TEMPLATE = "Error saving meal with request [%s]";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMealHandler.class);
 
     @Inject
@@ -38,7 +40,7 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
             LOGGER.info("User ID [{}]", userId);
 
             final JsonNode body = new ObjectMapper().readTree(request.getBody());
-            final Meal meal = new Meal();
+            final Meal meal = mealRepository.create();
             meal.setUserId(userId);
             meal.setDescription(body.get("description").asText());
             mealRepository.save(meal);
@@ -52,11 +54,11 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
                     .setObjectBody(meal)
                     .build();
         } catch (final Exception e) {
-            final String errorText = String.format("Error saving meal with request [%s]", request);
+            final String errorText = String.format(ERROR_MESSAGE_TEMPLATE, request);
             LOGGER.error(errorText, e);
             return ApiGatewayResponse.builder()
                     .setStatusCode(500)
-                    .setObjectBody(errorText)
+                    .setRawBody(errorText)
                     .build();
         }
     }

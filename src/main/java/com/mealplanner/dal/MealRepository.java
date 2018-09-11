@@ -66,6 +66,10 @@ public class MealRepository {
         }
     }
 
+    public Meal create() {
+        return new Meal();
+    }
+
     public void save(final Meal meal) {
         LOGGER.info("Saving meal [{}]", meal);
         mapper.save(meal);

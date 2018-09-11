@@ -42,7 +42,7 @@ public class HandlerUnitTestBase {
     }
 
     @BeforeEach
-    public void setup() {
+    public void setup() throws Exception {
         when(request.getRequestContext()).thenReturn(requestContext);
         when(requestContext.getIdentity()).thenReturn(identity);
         when(identity.getCognitoIdentityId()).thenReturn(USER_ID);
