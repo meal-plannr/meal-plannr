@@ -12,6 +12,8 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mealplanner.config.AppComponent;
+import com.mealplanner.config.DaggerAppComponent;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
@@ -19,13 +21,16 @@ import com.mealplanner.function.util.ApiGatewayResponse;
 
 public class PutMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
+    public static final String ERROR_MESSAGE_TEMPLATE = "Error updating meal with request [%s]";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(PutMealHandler.class);
 
-    private final MealRepository repository;
-
     @Inject
-    public PutMealHandler(final MealRepository mealRepository) {
-        this.repository = mealRepository;
+    MealRepository repository;
+
+    public PutMealHandler() {
+        final AppComponent component = DaggerAppComponent.builder().build();
+        component.inject(this);
     }
 
     @Override
@@ -51,11 +56,11 @@ public class PutMealHandler implements RequestHandler<ApiGatewayRequest, ApiGate
                     .setObjectBody(meal)
                     .build();
         } catch (final Exception e) {
-            final String errorText = String.format("Error retrieving meal with request [%s]", request);
+            final String errorText = String.format(ERROR_MESSAGE_TEMPLATE, request);
             LOGGER.error(errorText, e);
             return ApiGatewayResponse.builder()
                     .setStatusCode(500)
-                    .setObjectBody(errorText)
+                    .setRawBody(errorText)
                     .build();
         }
     }

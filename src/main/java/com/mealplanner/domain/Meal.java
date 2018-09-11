@@ -81,4 +81,33 @@ public class Meal implements Serializable {
         }
         return true;
     }
+
+    public static class Builder {
+        private String mealId;
+        private String userId;
+        private String description;
+
+        public Builder mealId(final String mealId) {
+            this.mealId = mealId;
+            return this;
+        }
+
+        public Builder userId(final String userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder description(final String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Meal build() {
+            final Meal meal = new Meal();
+            meal.setId(mealId);
+            meal.setUserId(userId);
+            meal.setDescription(description);
+            return meal;
+        }
+    }
 }

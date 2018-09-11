@@ -12,20 +12,26 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mealplanner.config.AppComponent;
+import com.mealplanner.config.DaggerAppComponent;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.mealplanner.function.util.ApiGatewayResponse;
+import com.mealplanner.function.util.HandlerUtil;
 
 public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
+    public static final String ERROR_MESSAGE_TEMPLATE = "Error saving meal with request [%s]";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateMealHandler.class);
 
-    private final MealRepository mealRepository;
-
     @Inject
-    public CreateMealHandler(final MealRepository mealRepository) {
-        this.mealRepository = mealRepository;
+    MealRepository mealRepository;
+
+    public CreateMealHandler() {
+        final AppComponent component = DaggerAppComponent.builder().build();
+        component.inject(this);
     }
 
     @Override
@@ -35,13 +41,13 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
             LOGGER.info("User ID [{}]", userId);
 
             final JsonNode body = new ObjectMapper().readTree(request.getBody());
-            final Meal meal = new Meal();
+            final Meal meal = mealRepository.create();
             meal.setUserId(userId);
             meal.setDescription(body.get("description").asText());
             mealRepository.save(meal);
 
             final Map<String, String> newHeaders = new HashMap<>();
-            newHeaders.put("Access-Control-Allow-Origin", "*");
+            newHeaders.put(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
             return ApiGatewayResponse.builder()
                     .setStatusCode(200)
@@ -49,11 +55,11 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
                     .setObjectBody(meal)
                     .build();
         } catch (final Exception e) {
-            final String errorText = String.format("Error saving meal with request [%s]", request);
+            final String errorText = String.format(ERROR_MESSAGE_TEMPLATE, request);
             LOGGER.error(errorText, e);
             return ApiGatewayResponse.builder()
                     .setStatusCode(500)
-                    .setObjectBody(errorText)
+                    .setRawBody(errorText)
                     .build();
         }
     }
