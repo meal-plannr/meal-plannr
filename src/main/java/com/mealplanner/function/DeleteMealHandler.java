@@ -18,6 +18,8 @@ import com.mealplanner.function.util.ApiGatewayResponse;
 
 public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
+    public static final String ERROR_MESSAGE_TEMPLATE = "Error deleting meal for request [%s]";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteMealHandler.class);
 
     @Inject
@@ -45,11 +47,11 @@ public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
                     .setHeaders(newHeaders)
                     .build();
         } catch (final Exception e) {
-            final String errorText = String.format("Error deleting meal for request [%s]", request);
+            final String errorText = String.format(ERROR_MESSAGE_TEMPLATE, request);
             LOGGER.error(errorText, e);
             return ApiGatewayResponse.builder()
                     .setStatusCode(500)
-                    .setObjectBody(errorText)
+                    .setRawBody(errorText)
                     .build();
         }
     }
