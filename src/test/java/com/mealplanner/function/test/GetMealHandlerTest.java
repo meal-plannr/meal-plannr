@@ -2,8 +2,6 @@ package com.mealplanner.function.test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
@@ -13,15 +11,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mealplanner.dal.MealRepository;
-import com.mealplanner.function.DeleteMealHandler;
+import com.mealplanner.domain.Meal;
+import com.mealplanner.function.GetMealHandler;
 import com.mealplanner.function.util.ApiGatewayResponse;
 import com.mealplanner.function.util.HandlerUtil;
 import com.mealplanner.test.HandlerUnitTestBase;
 
-public class DeleteMealHandlerTest extends HandlerUnitTestBase {
+public class GetMealHandlerTest extends HandlerUnitTestBase {
 
     private static final String MEAL_ID = "m1";
+    private static final Meal MEAL = new Meal.Builder().mealId(MEAL_ID).userId(USER_ID).build();
 
     @Mock
     private Map<String, String> pathParameters;
@@ -30,7 +31,7 @@ public class DeleteMealHandlerTest extends HandlerUnitTestBase {
     private MealRepository mealRepository;
 
     @InjectMocks
-    private DeleteMealHandler handler;
+    private GetMealHandler handler;
 
     @Override
     @BeforeEach
@@ -42,10 +43,13 @@ public class DeleteMealHandlerTest extends HandlerUnitTestBase {
     }
 
     @Test
-    public void meal_is_deleted_when_id_and_user_id_are_present() throws Exception {
-        handler.handleRequest(request, context);
+    public void meal_matching_id_is_returned() throws Exception {
+        when(mealRepository.get(MEAL_ID, USER_ID)).thenReturn(MEAL);
 
-        verify(mealRepository).delete(MEAL_ID, USER_ID);
+        final ApiGatewayResponse response = handler.handleRequest(request, context);
+
+        final Meal returnedMeal = new ObjectMapper().readValue(response.getBody(), Meal.class);
+        assertThat(returnedMeal).isEqualTo(MEAL);
     }
 
     @Test
@@ -65,7 +69,7 @@ public class DeleteMealHandlerTest extends HandlerUnitTestBase {
 
     @Test
     public void http_status_code_500_returned_on_error() throws Exception {
-        doThrow(RuntimeException.class).when(mealRepository).delete(MEAL_ID, USER_ID);
+        when(mealRepository.get(MEAL_ID, USER_ID)).thenThrow(RuntimeException.class);
 
         final ApiGatewayResponse response = handler.handleRequest(request, context);
 
@@ -74,11 +78,11 @@ public class DeleteMealHandlerTest extends HandlerUnitTestBase {
 
     @Test
     public void body_contains_error_text_when_error_occurs() throws Exception {
-        doThrow(RuntimeException.class).when(mealRepository).delete(MEAL_ID, USER_ID);
+        when(mealRepository.get(MEAL_ID, USER_ID)).thenThrow(RuntimeException.class);
 
         final ApiGatewayResponse response = handler.handleRequest(request, context);
 
-        final String expectedErrorResponse = String.format(DeleteMealHandler.ERROR_MESSAGE_TEMPLATE, request);
+        final String expectedErrorResponse = String.format(GetMealHandler.ERROR_MESSAGE_TEMPLATE, request);
         assertThat(response.getBody()).isEqualTo(expectedErrorResponse);
     }
 }

@@ -15,6 +15,7 @@ import com.mealplanner.config.DaggerAppComponent;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.mealplanner.function.util.ApiGatewayResponse;
+import com.mealplanner.function.util.HandlerUtil;
 
 public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
@@ -40,7 +41,7 @@ public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
             repository.delete(id, userId);
 
             final Map<String, String> newHeaders = new HashMap<>();
-            newHeaders.put("Access-Control-Allow-Origin", "*");
+            newHeaders.put(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
             return ApiGatewayResponse.builder()
                     .setStatusCode(200)

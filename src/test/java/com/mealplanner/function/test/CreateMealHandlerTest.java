@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableMap;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.CreateMealHandler;
-import com.mealplanner.function.ListMealsHandler;
 import com.mealplanner.function.util.ApiGatewayResponse;
+import com.mealplanner.function.util.HandlerUtil;
 import com.mealplanner.test.HandlerUnitTestBase;
 
 public class CreateMealHandlerTest extends HandlerUnitTestBase {
@@ -78,7 +78,7 @@ public class CreateMealHandlerTest extends HandlerUnitTestBase {
     public void access_control_allow_origin_open_to_all() throws Exception {
         final ApiGatewayResponse response = handler.handleRequest(request, context);
 
-        final String accessControlHeader = response.getHeaders().get(ListMealsHandler.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN);
+        final String accessControlHeader = response.getHeaders().get(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN);
         assertThat(accessControlHeader).isEqualTo("*");
     }
 

@@ -17,12 +17,11 @@ import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.mealplanner.function.util.ApiGatewayResponse;
+import com.mealplanner.function.util.HandlerUtil;
 
 public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
     public static final String ERROR_MESSAGE_TEMPLATE = "Error retrieving meal with request [%s]";
-    public static final String HEADER_ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ListMealsHandler.class);
 
     @Inject
@@ -40,7 +39,7 @@ public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGa
             final List<Meal> meals = repository.getAllMealsForUser(userId);
 
             final Map<String, String> newHeaders = new HashMap<>();
-            newHeaders.put(HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
+            newHeaders.put(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
             return ApiGatewayResponse.builder()
                     .setStatusCode(200)
                     .setHeaders(newHeaders)

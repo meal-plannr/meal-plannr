@@ -16,8 +16,11 @@ import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.mealplanner.function.util.ApiGatewayResponse;
+import com.mealplanner.function.util.HandlerUtil;
 
 public class GetMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
+
+    public static final String ERROR_MESSAGE_TEMPLATE = "Error retrieving meal with request [%s]";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetMealHandler.class);
 
@@ -39,7 +42,7 @@ public class GetMealHandler implements RequestHandler<ApiGatewayRequest, ApiGate
             final Meal meal = repository.get(id, userId);
 
             final Map<String, String> newHeaders = new HashMap<>();
-            newHeaders.put("Access-Control-Allow-Origin", "*");
+            newHeaders.put(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
             return ApiGatewayResponse.builder()
                     .setStatusCode(200)
@@ -47,11 +50,11 @@ public class GetMealHandler implements RequestHandler<ApiGatewayRequest, ApiGate
                     .setObjectBody(meal)
                     .build();
         } catch (final Exception e) {
-            final String errorText = String.format("Error retrieving meal with request [%s]", request);
+            final String errorText = String.format(ERROR_MESSAGE_TEMPLATE, request);
             LOGGER.error(errorText, e);
             return ApiGatewayResponse.builder()
                     .setStatusCode(500)
-                    .setObjectBody(errorText)
+                    .setRawBody(errorText)
                     .build();
         }
     }

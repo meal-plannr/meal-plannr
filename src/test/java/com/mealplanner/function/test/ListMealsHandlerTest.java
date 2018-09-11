@@ -17,6 +17,7 @@ import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.ListMealsHandler;
 import com.mealplanner.function.util.ApiGatewayResponse;
+import com.mealplanner.function.util.HandlerUtil;
 import com.mealplanner.test.HandlerUnitTestBase;
 
 public class ListMealsHandlerTest extends HandlerUnitTestBase {
@@ -77,7 +78,7 @@ public class ListMealsHandlerTest extends HandlerUnitTestBase {
 
         final ApiGatewayResponse response = handler.handleRequest(request, context);
 
-        final String accessControlHeader = response.getHeaders().get(ListMealsHandler.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN);
+        final String accessControlHeader = response.getHeaders().get(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN);
         assertThat(accessControlHeader).isEqualTo("*");
     }
 

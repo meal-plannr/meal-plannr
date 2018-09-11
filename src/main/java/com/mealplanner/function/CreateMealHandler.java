@@ -18,6 +18,7 @@ import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.function.util.ApiGatewayRequest;
 import com.mealplanner.function.util.ApiGatewayResponse;
+import com.mealplanner.function.util.HandlerUtil;
 
 public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
@@ -46,7 +47,7 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
             mealRepository.save(meal);
 
             final Map<String, String> newHeaders = new HashMap<>();
-            newHeaders.put("Access-Control-Allow-Origin", "*");
+            newHeaders.put(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
 
             return ApiGatewayResponse.builder()
                     .setStatusCode(200)
