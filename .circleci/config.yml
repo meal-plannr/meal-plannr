@@ -52,6 +52,10 @@ jobs:
             - serverless.yml
             - resources
 
+      - sonar:
+          name: Run code quality checks
+          command: mvn sonar:sonar -Dsonar.login=$SONAR_CLOUD_ID
+
   dev-deploy:
     docker:
       - image: mealplannr/circleci-api-build:1.0
