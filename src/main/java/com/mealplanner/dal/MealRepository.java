@@ -20,31 +20,37 @@ import com.mealplanner.domain.Meal;
 @Singleton
 public class MealRepository {
 
+    public static final String ERROR_TEMPLATE_MULTIPLE_MEALS_FOUND_FOR_ID_AND_USER_ID = "Multiple Meals found for ID [%s] and userID [%s]";
+
+    public static final String ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID = "No Meal found for ID [%s] and user ID [%s]";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MealRepository.class);
 
     private final DynamoDBMapper mapper;
+    private final DynamoDbFactory dynamoDbFactory;
 
     @Inject
-    public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper) {
+    public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper, final DynamoDbFactory dynamoDbFactory) {
         this.mapper = mapper;
+        this.dynamoDbFactory = dynamoDbFactory;
     }
 
     public Meal get(final String mealId, final String userId) {
-        final Map<String, AttributeValue> attributeValues = new HashMap<>();
-        attributeValues.put(":mealId", new AttributeValue().withS(mealId));
-        attributeValues.put(":userId", new AttributeValue().withS(userId));
+        final Map<String, AttributeValue> attributeValues = dynamoDbFactory.createAttributesMap();
+        attributeValues.put(":mealId", dynamoDbFactory.createAttributeValue().withS(mealId));
+        attributeValues.put(":userId", dynamoDbFactory.createAttributeValue().withS(userId));
 
-        final DynamoDBQueryExpression<Meal> queryExpression = new DynamoDBQueryExpression<Meal>()
+        final DynamoDBQueryExpression<Meal> queryExpression = dynamoDbFactory.createQueryExpression()
                 .withKeyConditionExpression("mealId = :mealId and userId = :userId")
                 .withExpressionAttributeValues(attributeValues);
 
         final PaginatedQueryList<Meal> result = mapper.query(Meal.class, queryExpression);
         if (result.size() == 1) {
             return result.get(0);
-        } else if (result.size() == 0) {
-            throw new IllegalStateException(String.format("No Meal found for ID [%s] and user ID [{}]", mealId, userId));
+        } else if (result.isEmpty()) {
+            throw new IllegalStateException(String.format(ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID, mealId, userId));
         } else {
-            throw new IllegalStateException(String.format("Multiple Meals found for ID [%s] and userID [{}]", mealId, userId));
+            throw new IllegalStateException(String.format(ERROR_TEMPLATE_MULTIPLE_MEALS_FOUND_FOR_ID_AND_USER_ID, mealId, userId));
         }
     }
 

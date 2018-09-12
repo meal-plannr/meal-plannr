@@ -1,6 +1,13 @@
 package com.mealplanner.dal.test;
 
+import static com.mealplanner.dal.MealRepository.ERROR_TEMPLATE_MULTIPLE_MEALS_FOUND_FOR_ID_AND_USER_ID;
+import static com.mealplanner.dal.MealRepository.ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,7 +18,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.mealplanner.dal.DynamoDbFactory;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 
@@ -21,8 +31,15 @@ public class MealRepositoryTest {
     private static final String MEAL_ID = "meal1";
     private static final String USER_ID = "user1";
 
+    private final AttributeValue mealIdAttribute = new AttributeValue();
+    private final AttributeValue userIdAttribute = new AttributeValue();
+    private final DynamoDBQueryExpression<Meal> queryExpression = new DynamoDBQueryExpression<Meal>();
+
     @Mock
     private DynamoDBMapper mapper;
+
+    @Mock
+    private DynamoDbFactory dynamoDbFactory;
 
     @Mock
     private PaginatedQueryList<Meal> paginatedQueryList;
@@ -30,17 +47,68 @@ public class MealRepositoryTest {
     @Mock
     private Meal mockMeal;
 
+    @Mock
+    private Map<String, AttributeValue> attributeMap;
+
     @InjectMocks
     private MealRepository mealRepository;
 
     @Test
+    public void user_id_and_meal_id_are_used_to_retrieve_meal() {
+        setupGetMealMethod();
+
+        when(paginatedQueryList.size()).thenReturn(1);
+        when(paginatedQueryList.get(0)).thenReturn(mockMeal);
+
+        mealRepository.get(MEAL_ID, USER_ID);
+
+        verify(mapper).query(Meal.class, queryExpression);
+        assertThat(queryExpression.getExpressionAttributeValues()).isEqualTo(attributeMap);
+        verify(attributeMap).put(":mealId", mealIdAttribute);
+        verify(attributeMap).put(":userId", userIdAttribute);
+        assertThat(queryExpression.getKeyConditionExpression()).isEqualTo("mealId = :mealId and userId = :userId");
+    }
+
+    private void setupGetMealMethod() {
+        when(dynamoDbFactory.createAttributesMap()).thenReturn(attributeMap);
+        when(dynamoDbFactory.createAttributeValue()).thenReturn(mealIdAttribute, userIdAttribute);
+
+        when(dynamoDbFactory.createQueryExpression()).thenReturn(queryExpression);
+
+        when(mapper.query(Mockito.eq(Meal.class), Mockito.eq(queryExpression))).thenReturn(paginatedQueryList);
+    }
+
+    @Test
     public void meal_is_returned_if_one_result_is_found() {
-        when(mapper.query(Mockito.eq(Meal.class), Mockito.any())).thenReturn(paginatedQueryList);
+        setupGetMealMethod();
+
         when(paginatedQueryList.size()).thenReturn(1);
         when(paginatedQueryList.get(0)).thenReturn(mockMeal);
 
         final Meal meal = mealRepository.get(MEAL_ID, USER_ID);
 
         Assertions.assertThat(meal).isEqualTo(mockMeal);
+    }
+
+    @Test
+    public void exception_is_thrown_if_no_meal_found_for_user_and_id() {
+        setupGetMealMethod();
+
+        when(paginatedQueryList.isEmpty()).thenReturn(true);
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> mealRepository.get(MEAL_ID, USER_ID))
+                .withMessage(ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID, MEAL_ID, USER_ID);
+    }
+
+    @Test
+    public void exception_is_thrown_if_multiple_meals_found_for_user_and_id() {
+        setupGetMealMethod();
+
+        when(paginatedQueryList.size()).thenReturn(2);
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> mealRepository.get(MEAL_ID, USER_ID))
+                .withMessage(ERROR_TEMPLATE_MULTIPLE_MEALS_FOUND_FOR_ID_AND_USER_ID, MEAL_ID, USER_ID);
     }
 }

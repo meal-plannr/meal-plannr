@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.mealplanner.dal.DynamoDbAdapter;
+import com.mealplanner.dal.DynamoDbFactory;
 
 import dagger.Module;
 import dagger.Provides;
@@ -22,5 +23,11 @@ public class DaoModule {
                 .build();
 
         return dynamoDbAdapter.createDbMapper(mapperConfig);
+    }
+
+    @Singleton
+    @Provides
+    public DynamoDbFactory dynamoDbFactory() {
+        return new DynamoDbFactory();
     }
 }
