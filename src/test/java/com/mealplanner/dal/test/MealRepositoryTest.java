@@ -69,15 +69,6 @@ public class MealRepositoryTest {
         assertThat(queryExpression.getKeyConditionExpression()).isEqualTo("mealId = :mealId and userId = :userId");
     }
 
-    private void setupGetMealMethod() {
-        when(dynamoDbFactory.createAttributesMap()).thenReturn(attributeMap);
-        when(dynamoDbFactory.createAttributeValue()).thenReturn(mealIdAttribute, userIdAttribute);
-
-        when(dynamoDbFactory.createQueryExpression()).thenReturn(queryExpression);
-
-        when(mapper.query(Mockito.eq(Meal.class), Mockito.eq(queryExpression))).thenReturn(paginatedQueryList);
-    }
-
     @Test
     public void meal_is_returned_if_one_result_is_found() {
         setupGetMealMethod();
@@ -110,5 +101,28 @@ public class MealRepositoryTest {
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> mealRepository.get(MEAL_ID, USER_ID))
                 .withMessage(ERROR_TEMPLATE_MULTIPLE_MEALS_FOUND_FOR_ID_AND_USER_ID, MEAL_ID, USER_ID);
+    }
+
+    @Test
+    public void user_id_is_used_to_retrieve_meals() {
+        when(dynamoDbFactory.createAttributesMap()).thenReturn(attributeMap);
+        when(dynamoDbFactory.createAttributeValue()).thenReturn(userIdAttribute);
+        when(dynamoDbFactory.createQueryExpression()).thenReturn(queryExpression);
+
+        mealRepository.getAllMealsForUser(USER_ID);
+
+        verify(mapper).query(Meal.class, queryExpression);
+        assertThat(queryExpression.getExpressionAttributeValues()).isEqualTo(attributeMap);
+        verify(attributeMap).put(":userId", userIdAttribute);
+        assertThat(queryExpression.getKeyConditionExpression()).isEqualTo("userId = :userId");
+    }
+
+    private void setupGetMealMethod() {
+        when(dynamoDbFactory.createAttributesMap()).thenReturn(attributeMap);
+        when(dynamoDbFactory.createAttributeValue()).thenReturn(mealIdAttribute, userIdAttribute);
+
+        when(dynamoDbFactory.createQueryExpression()).thenReturn(queryExpression);
+
+        when(mapper.query(Mockito.eq(Meal.class), Mockito.eq(queryExpression))).thenReturn(paginatedQueryList);
     }
 }

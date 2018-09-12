@@ -1,6 +1,5 @@
 package com.mealplanner.dal;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -55,10 +54,10 @@ public class MealRepository {
     }
 
     public List<Meal> getAllMealsForUser(final String userId) {
-        final Map<String, AttributeValue> attributeValues = new HashMap<>();
-        attributeValues.put(":userId", new AttributeValue().withS(userId));
+        final Map<String, AttributeValue> attributeValues = dynamoDbFactory.createAttributesMap();
+        attributeValues.put(":userId", dynamoDbFactory.createAttributeValue().withS(userId));
 
-        final DynamoDBQueryExpression<Meal> queryExpression = new DynamoDBQueryExpression<Meal>()
+        final DynamoDBQueryExpression<Meal> queryExpression = dynamoDbFactory.createQueryExpression()
                 .withKeyConditionExpression("userId = :userId")
                 .withExpressionAttributeValues(attributeValues);
 
