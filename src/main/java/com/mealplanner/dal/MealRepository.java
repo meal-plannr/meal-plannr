@@ -21,16 +21,16 @@ import com.mealplanner.domain.Meal;
 public class MealRepository {
 
     public static final String ERROR_TEMPLATE_MULTIPLE_MEALS_FOUND_FOR_ID_AND_USER_ID = "Multiple Meals found for ID [%s] and userID [%s]";
-
     public static final String ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID = "No Meal found for ID [%s] and user ID [%s]";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MealRepository.class);
 
     private final DynamoDBMapper mapper;
-    private final DynamoDbFactory dynamoDbFactory;
+    private final DynamoDbFactory<Meal> dynamoDbFactory;
 
     @Inject
-    public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper, final DynamoDbFactory dynamoDbFactory) {
+    public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper,
+            @Named("mealsDynamoDbFactory") final DynamoDbFactory<Meal> dynamoDbFactory) {
         this.mapper = mapper;
         this.dynamoDbFactory = dynamoDbFactory;
     }

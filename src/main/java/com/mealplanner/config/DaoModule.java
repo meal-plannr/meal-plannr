@@ -7,6 +7,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
 import com.mealplanner.dal.DynamoDbAdapter;
 import com.mealplanner.dal.DynamoDbFactory;
+import com.mealplanner.domain.Meal;
 
 import dagger.Module;
 import dagger.Provides;
@@ -27,7 +28,8 @@ public class DaoModule {
 
     @Singleton
     @Provides
-    public DynamoDbFactory dynamoDbFactory() {
-        return new DynamoDbFactory();
+    @Named("mealsDynamoDbFactory")
+    public DynamoDbFactory<Meal> dynamoDbFactory() {
+        return new DynamoDbFactory<Meal>();
     }
 }

@@ -39,7 +39,7 @@ public class MealRepositoryTest {
     private DynamoDBMapper mapper;
 
     @Mock
-    private DynamoDbFactory dynamoDbFactory;
+    private DynamoDbFactory<Meal> dynamoDbFactory;
 
     @Mock
     private PaginatedQueryList<Meal> paginatedQueryList;

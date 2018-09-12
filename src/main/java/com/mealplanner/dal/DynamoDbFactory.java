@@ -5,9 +5,8 @@ import java.util.Map;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.mealplanner.domain.Meal;
 
-public class DynamoDbFactory {
+public class DynamoDbFactory<T> {
 
     public Map<String, AttributeValue> createAttributesMap() {
         return new HashMap<>();
@@ -17,7 +16,7 @@ public class DynamoDbFactory {
         return new AttributeValue();
     }
 
-    public DynamoDBQueryExpression<Meal> createQueryExpression() {
+    public DynamoDBQueryExpression<T> createQueryExpression() {
         return new DynamoDBQueryExpression<>();
     }
 }
