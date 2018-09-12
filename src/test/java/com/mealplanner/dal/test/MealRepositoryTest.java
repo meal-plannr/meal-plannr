@@ -4,6 +4,7 @@ import static com.mealplanner.dal.MealRepository.ERROR_TEMPLATE_MULTIPLE_MEALS_F
 import static com.mealplanner.dal.MealRepository.ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -115,6 +116,43 @@ public class MealRepositoryTest {
         assertThat(queryExpression.getExpressionAttributeValues()).isEqualTo(attributeMap);
         verify(attributeMap).put(":userId", userIdAttribute);
         assertThat(queryExpression.getKeyConditionExpression()).isEqualTo("userId = :userId");
+    }
+
+    @Test
+    public void meal_is_deleted_if_found() {
+        setupGetMealMethod();
+
+        when(paginatedQueryList.size()).thenReturn(1);
+        when(paginatedQueryList.get(0)).thenReturn(mockMeal);
+
+        mealRepository.delete(MEAL_ID, USER_ID);
+
+        verify(mapper).delete(mockMeal);
+    }
+
+    @Test
+    public void exception_is_thrown_when_deleting_a_meal_that_does_not_exist() {
+        setupGetMealMethod();
+        when(paginatedQueryList.isEmpty()).thenReturn(true);
+
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> mealRepository.delete(MEAL_ID, USER_ID))
+                .withMessage(ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID, MEAL_ID, USER_ID);
+    }
+
+    @Test
+    public void meal_is_saved() {
+        mealRepository.save(mockMeal);
+
+        verify(mapper).save(mockMeal);
+    }
+
+    @Test
+    public void created_meal_has_no_populated_fields() {
+        final Meal createdMeal = mealRepository.create();
+        assertAll(() -> assertThat(createdMeal.getId()).isNullOrEmpty(),
+                () -> assertThat(createdMeal.getUserId()).isNullOrEmpty(),
+                () -> assertThat(createdMeal.getDescription()).isNullOrEmpty());
     }
 
     private void setupGetMealMethod() {
