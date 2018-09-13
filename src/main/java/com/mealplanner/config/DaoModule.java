@@ -30,6 +30,6 @@ public class DaoModule {
     @Provides
     @Named("mealsDynamoDbFactory")
     public DynamoDbFactory<Meal> dynamoDbFactory() {
-        return new DynamoDbFactory<Meal>();
+        return new DynamoDbFactory<>();
     }
 }
