@@ -66,9 +66,7 @@ public class MealRepository {
 
     public void delete(final String mealId, final String userId) {
         final Meal meal = get(mealId, userId);
-        if (meal != null) {
-            mapper.delete(meal);
-        }
+        mapper.delete(meal);
     }
 
     public Meal create() {
