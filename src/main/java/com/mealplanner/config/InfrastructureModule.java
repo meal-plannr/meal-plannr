@@ -1,10 +1,9 @@
 package com.mealplanner.config;
 
+import java.util.Optional;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,23 +13,15 @@ public class InfrastructureModule {
 
     @Singleton
     @Provides
-    @Named("mealsTableName")
-    String tableName() {
-        return System.getenv("tableName");
+    @Named("runningTestsOnCi")
+    boolean runningTestsOnCi() {
+        return Optional.ofNullable(Boolean.valueOf(System.getProperty("runningTestsOnCi"))).orElse(false);
     }
 
     @Singleton
     @Provides
-    @Named("awsRegion")
-    String awsRegion() {
-        return System.getenv("region");
-    }
-
-    @Singleton
-    @Provides
-    public AmazonDynamoDB amazonDynamoDb(@Named("awsRegion") final String awsRegion) {
-        return AmazonDynamoDBClientBuilder.standard()
-                .withRegion(awsRegion)
-                .build();
+    @Named("runningInProduction")
+    boolean runningInProduction() {
+        return Optional.ofNullable(Boolean.valueOf(System.getenv("production"))).orElse(false);
     }
 }

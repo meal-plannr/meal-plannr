@@ -10,6 +10,7 @@ provider:
     tableName:
       Ref: MealsTable
     region: ${self:provider.region}
+    production: true
 
   iamRoleStatements:
     - Effect: Allow
