@@ -30,12 +30,7 @@ public class IntegrationTestBase {
     protected MealRepository mealRepository;
 
     @Inject
-    @Named("mealsTableName")
-    protected String mealsTableName;
-
-    @Inject
-    @Named("runningTestsOnCi")
-    boolean runningTestsOnCi;
+    ConfigProperties properties;
 
     @Inject
     protected AmazonDynamoDB amazonDynamoDb;
@@ -51,7 +46,7 @@ public class IntegrationTestBase {
 
     @BeforeEach
     public void setup() throws Exception {
-        if (!localMealsTableCreated && runningLocally()) {
+        if (!localMealsTableCreated && needToCreateTables()) {
             recreateMealsTable();
             localMealsTableCreated = true;
         }
@@ -59,8 +54,8 @@ public class IntegrationTestBase {
         deleteMeals();
     }
 
-    private boolean runningLocally() {
-        return !runningTestsOnCi;
+    private boolean needToCreateTables() {
+        return properties.needToCreateDynamoTables();
     }
 
     private void deleteMeals() {
@@ -72,6 +67,8 @@ public class IntegrationTestBase {
     }
 
     private void recreateMealsTable() throws Exception {
+        final String mealsTableName = properties.getMealsTableName();
+
         TableUtils.deleteTableIfExists(amazonDynamoDb, new DeleteTableRequest()
                 .withTableName(mealsTableName));
 

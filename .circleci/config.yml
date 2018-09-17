@@ -11,10 +11,6 @@ jobs:
         environment:
           MAVEN_OPTS: -Xmx3200m
 
-      - image: localstack/localstack
-        environment:
-          SERVICES: dynamodb
-
     working_directory: ~/repo
 
     steps:
@@ -43,7 +39,7 @@ jobs:
 
       - run:
           name: Run tests and package jar
-          command: mvn -Dregion="eu-west-2" -DtableName="ci-meals" clean verify
+          command: mvn -DrunningTestsOnCi="true" clean verify
 
       - persist_to_workspace:
           root: ~/repo
