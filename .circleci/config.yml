@@ -59,7 +59,7 @@ jobs:
 
       - run:
           name: Remove infastructure
-          command: sls -v remove --stage ci
+          command: sls remove -v --stage ci
           when: always
 
   dev-deploy:
