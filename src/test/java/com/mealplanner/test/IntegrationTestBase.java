@@ -6,6 +6,9 @@ import javax.inject.Named;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
+import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
@@ -15,8 +18,11 @@ import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.mealplanner.dal.MealRepository;
+import com.mealplanner.domain.Meal;
 
 public class IntegrationTestBase {
+
+    private static boolean localMealsTableCreated = false;
 
     private final AppTestComponent appComponent;
 
@@ -28,7 +34,15 @@ public class IntegrationTestBase {
     protected String mealsTableName;
 
     @Inject
+    @Named("runningTestsOnCi")
+    boolean runningTestsOnCi;
+
+    @Inject
     protected AmazonDynamoDB amazonDynamoDb;
+
+    @Inject
+    @Named("mealsDynamoDbMapper")
+    DynamoDBMapper mealsMapper;
 
     public IntegrationTestBase() {
         appComponent = DaggerAppTestComponent.builder().build();
@@ -37,7 +51,24 @@ public class IntegrationTestBase {
 
     @BeforeEach
     public void setup() throws Exception {
-        recreateMealsTable();
+        if (!localMealsTableCreated && runningLocally()) {
+            recreateMealsTable();
+            localMealsTableCreated = true;
+        }
+
+        deleteMeals();
+    }
+
+    private boolean runningLocally() {
+        return !runningTestsOnCi;
+    }
+
+    private void deleteMeals() {
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        final PaginatedScanList<Meal> result = mealsMapper.scan(Meal.class, scanExpression);
+        for (final Meal meal : result) {
+            mealsMapper.delete(meal);
+        }
     }
 
     private void recreateMealsTable() throws Exception {

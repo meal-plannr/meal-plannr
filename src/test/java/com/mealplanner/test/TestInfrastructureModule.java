@@ -1,5 +1,7 @@
 package com.mealplanner.test;
 
+import java.util.Optional;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -17,23 +19,36 @@ public class TestInfrastructureModule {
     @Provides
     @Named("mealsTableName")
     String tableName() {
-        return "meals";
+        return Optional.ofNullable(System.getProperty("tableName")).orElse("meals");
     }
 
     @Singleton
     @Provides
     @Named("awsRegion")
     String awsRegion() {
-        return "eu-west-1";
+        return Optional.ofNullable(System.getProperty("region")).orElse("eu-west-1");
     }
 
     @Singleton
     @Provides
-    public AmazonDynamoDB amazonDynamoDb(@Named("awsRegion") final String awsRegion) {
-        final String endpoint = "http://localhost:4569";
-        return AmazonDynamoDBClientBuilder.standard()
-                .withEndpointConfiguration(new EndpointConfiguration(endpoint, awsRegion))
-                .build();
+    @Named("runningTestsOnCi")
+    boolean runningTestsOnCi() {
+        return Optional.ofNullable(Boolean.valueOf(System.getProperty("runningTestsOnCi"))).orElse(false);
+    }
+
+    @Singleton
+    @Provides
+    public AmazonDynamoDB amazonDynamoDb(@Named("awsRegion") final String awsRegion, @Named("runningTestsOnCi") final boolean runningTestsOnCi) {
+        final AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
+        if (runningTestsOnCi) {
+            builder.withRegion(awsRegion);
+
+        } else {
+            final String endpoint = "http://localhost:4569";
+            builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, awsRegion));
+        }
+
+        return builder.build();
     }
 
 }
