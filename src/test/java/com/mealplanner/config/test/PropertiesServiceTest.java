@@ -6,9 +6,13 @@ import org.junit.Rule;
 import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.mealplanner.config.PropertiesFileSelectorService;
 import com.mealplanner.config.PropertiesService;
 
+@ExtendWith(MockitoExtension.class)
 public class PropertiesServiceTest {
 
     @Rule
@@ -22,7 +26,8 @@ public class PropertiesServiceTest {
 
     @Test
     public void production_values_take_precedence_over_everything() {
-        final PropertiesService service = new PropertiesService(false, true);
+        final PropertiesFileSelectorService propertiesFileSelectorService = new PropertiesFileSelectorService(false, true);
+        final PropertiesService service = new PropertiesService(propertiesFileSelectorService);
 
         assertThat(service.getAwsRegion()).isEqualTo("my-region");
         assertThat(service.getMealsTableName()).isEqualTo("the-table");
@@ -32,7 +37,8 @@ public class PropertiesServiceTest {
 
     @Test
     public void ci_values_take_precendence_over_local() {
-        final PropertiesService service = new PropertiesService(true, false);
+        final PropertiesFileSelectorService propertiesFileSelectorService = new PropertiesFileSelectorService(true, false);
+        final PropertiesService service = new PropertiesService(propertiesFileSelectorService);
 
         assertThat(service.getAwsRegion()).isEqualTo("eu-west-2");
         assertThat(service.getMealsTableName()).isEqualTo("ci-meals");
@@ -42,7 +48,8 @@ public class PropertiesServiceTest {
 
     @Test
     public void local_values_are_used_by_default() {
-        final PropertiesService service = new PropertiesService(false, false);
+        final PropertiesFileSelectorService propertiesFileSelectorService = new PropertiesFileSelectorService(false, false);
+        final PropertiesService service = new PropertiesService(propertiesFileSelectorService);
 
         assertThat(service.getAwsRegion()).isEqualTo("eu-west-1");
         assertThat(service.getMealsTableName()).isEqualTo("meals");

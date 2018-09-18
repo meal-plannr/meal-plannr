@@ -2,9 +2,6 @@ package com.mealplanner.test;
 
 import static org.mockito.Mockito.when;
 
-import org.junit.Rule;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -20,9 +17,6 @@ public class HandlerUnitTestBase {
 
     protected static final String USER_ID = "user1";
 
-    @Rule
-    public static final EnvironmentVariables ENVIRONMENT_VARIABLES = new EnvironmentVariables();
-
     @Mock
     protected ApiGatewayRequest request;
 
@@ -34,12 +28,6 @@ public class HandlerUnitTestBase {
 
     @Mock
     protected Context context;
-
-    @BeforeAll
-    public static void setEnvVars() {
-        ENVIRONMENT_VARIABLES.set("region", "eu-west-2");
-        ENVIRONMENT_VARIABLES.set("tableName", "meals");
-    }
 
     @BeforeEach
     public void setup() throws Exception {

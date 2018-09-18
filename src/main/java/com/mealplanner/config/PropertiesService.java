@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
@@ -23,12 +22,12 @@ public class PropertiesService {
     private final Properties props = new Properties();
 
     @Inject
-    public PropertiesService(@Named("runningTestsOnCi") final boolean runningTestsOnCi, @Named("runningInProduction") final boolean runningInProduction) {
-        if (runningInProduction) {
+    public PropertiesService(final PropertiesFileSelectorService propertiesFileSelectorService) {
+        if (propertiesFileSelectorService.isRunningInProduction()) {
             props.setProperty(AWS_REGION, System.getenv("region"));
             props.setProperty(DYNAMO_MEALS_TABLE_NAME, System.getenv("tableName"));
         } else {
-            final String fileName = runningTestsOnCi ? "ci.properties" : "local.properties";
+            final String fileName = propertiesFileSelectorService.getPropertiesFile();
             try {
                 props.load(getClass().getClassLoader().getResourceAsStream(fileName));
             } catch (final IOException e) {
