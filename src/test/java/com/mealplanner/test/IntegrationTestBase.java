@@ -11,7 +11,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.DeleteTableRequest;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
@@ -48,7 +47,7 @@ public class IntegrationTestBase {
     @BeforeEach
     public void setup() throws Exception {
         if (!localMealsTableCreated && needToCreateTables()) {
-            recreateMealsTable();
+            createMealsTable();
             localMealsTableCreated = true;
         }
 
@@ -67,11 +66,8 @@ public class IntegrationTestBase {
         }
     }
 
-    private void recreateMealsTable() throws Exception {
+    private void createMealsTable() throws Exception {
         final String mealsTableName = properties.getMealsTableName();
-
-        TableUtils.deleteTableIfExists(amazonDynamoDb, new DeleteTableRequest()
-                .withTableName(mealsTableName));
 
         TableUtils.createTableIfNotExists(amazonDynamoDb, new CreateTableRequest()
                 .withTableName(mealsTableName)
