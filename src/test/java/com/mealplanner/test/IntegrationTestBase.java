@@ -62,54 +62,24 @@ public class IntegrationTestBase {
     @BeforeEach
     public void setup() throws Exception {
         if (properties.isLocalEnvironment() && !localSetupComplete) {
+            LOGGER.info("Starting local setup");
+
             createMealsTable();
 
             //Kinesis in Localstack does not support Cbor so it must be disabled when running locally
             System.setProperty("com.amazonaws.sdk.disableCbor", "true");
             createKinesisStreamIfNecessary();
             localSetupComplete = true;
+
+            LOGGER.info("Local setup complete");
         }
 
         deleteMeals();
     }
 
-    private void createKinesisStreamIfNecessary() {
-        final String streamName = "savedMeals";
-        if (!streamIsActive(streamName)) {
-            final Integer streamSize = 1;
-
-            final CreateStreamRequest createStreamRequest = new CreateStreamRequest();
-            createStreamRequest.setStreamName(streamName);
-            createStreamRequest.setShardCount(streamSize);
-            amazonKinesis.createStream(createStreamRequest);
-
-            Awaitility.await()
-                    .atMost(10, TimeUnit.SECONDS)
-                    .until(() -> streamIsActive(streamName));
-        }
-    }
-
-    private boolean streamIsActive(final String myStreamName) {
-        final DescribeStreamRequest describeStreamRequest = new DescribeStreamRequest();
-        describeStreamRequest.setStreamName(myStreamName);
-        try {
-            final DescribeStreamResult describeStreamResponse = amazonKinesis.describeStream(describeStreamRequest);
-            return describeStreamResponse.getStreamDescription().getStreamStatus().equals("ACTIVE");
-        } catch (final ResourceNotFoundException e) {
-        }
-
-        return false;
-    }
-
-    private void deleteMeals() {
-        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-        final PaginatedScanList<Meal> result = mealsMapper.scan(Meal.class, scanExpression);
-        for (final Meal meal : result) {
-            mealsMapper.delete(meal);
-        }
-    }
-
     private void createMealsTable() throws Exception {
+        LOGGER.info("Creating meals table if it doesn't already exist");
+
         final String mealsTableName = properties.getMealsTableName();
 
         TableUtils.createTableIfNotExists(amazonDynamoDb, new CreateTableRequest()
@@ -133,5 +103,53 @@ public class IntegrationTestBase {
                         .withWriteCapacityUnits(1L)));
 
         TableUtils.waitUntilActive(amazonDynamoDb, mealsTableName, 5000, 100);
+
+        LOGGER.info("Meals table created");
+    }
+
+    private void createKinesisStreamIfNecessary() {
+        LOGGER.info("Creating Kinesis stream if it doesn't already exist");
+
+        final String streamName = "savedMeals";
+        if (!streamIsActive(streamName)) {
+            LOGGER.info("Kinesis stream does not exist so creating it");
+
+            final Integer streamSize = 1;
+
+            final CreateStreamRequest createStreamRequest = new CreateStreamRequest();
+            createStreamRequest.setStreamName(streamName);
+            createStreamRequest.setShardCount(streamSize);
+            amazonKinesis.createStream(createStreamRequest);
+
+            Awaitility.await()
+                    .atMost(10, TimeUnit.SECONDS)
+                    .until(() -> streamIsActive(streamName));
+
+            LOGGER.info("Finished creating Kinesis stream");
+        }
+
+        LOGGER.info("Kinesis stream is ready");
+    }
+
+    private boolean streamIsActive(final String myStreamName) {
+        final DescribeStreamRequest describeStreamRequest = new DescribeStreamRequest();
+        describeStreamRequest.setStreamName(myStreamName);
+        try {
+            final DescribeStreamResult describeStreamResponse = amazonKinesis.describeStream(describeStreamRequest);
+            return describeStreamResponse.getStreamDescription().getStreamStatus().equals("ACTIVE");
+        } catch (final ResourceNotFoundException e) {
+        }
+
+        return false;
+    }
+
+    private void deleteMeals() {
+        LOGGER.info("Deleting all meals");
+
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        final PaginatedScanList<Meal> result = mealsMapper.scan(Meal.class, scanExpression);
+        for (final Meal meal : result) {
+            mealsMapper.delete(meal);
+        }
     }
 }
