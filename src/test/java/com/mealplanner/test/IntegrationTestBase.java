@@ -7,6 +7,8 @@ import javax.inject.Named;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -30,7 +32,9 @@ import com.mealplanner.domain.Meal;
 
 public class IntegrationTestBase {
 
-    private static boolean localMealsTableCreated = false;
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
+
+    private static boolean localSetupComplete = false;
 
     private final AppTestComponent appComponent;
 
@@ -51,19 +55,19 @@ public class IntegrationTestBase {
     AmazonKinesis amazonKinesis;
 
     public IntegrationTestBase() {
-        System.setProperty("com.amazonaws.sdk.disableCbor", "true");
-
         appComponent = DaggerAppTestComponent.builder().build();
         appComponent.inject(this);
     }
 
     @BeforeEach
     public void setup() throws Exception {
-        if (!localMealsTableCreated && needToCreateTables()) {
+        if (properties.isLocalEnvironment() && !localSetupComplete) {
             createMealsTable();
-            localMealsTableCreated = true;
 
+            //Kinesis in Localstack does not support Cbor so it must be disabled when running locally
+            System.setProperty("com.amazonaws.sdk.disableCbor", "true");
             createKinesisStreamIfNecessary();
+            localSetupComplete = true;
         }
 
         deleteMeals();
@@ -95,10 +99,6 @@ public class IntegrationTestBase {
         }
 
         return false;
-    }
-
-    private boolean needToCreateTables() {
-        return properties.needToCreateDynamoTables();
     }
 
     private void deleteMeals() {

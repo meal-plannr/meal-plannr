@@ -1,7 +1,5 @@
 package com.mealplanner.config;
 
-import java.util.Optional;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -19,16 +17,10 @@ public class InfrastructureModule {
 
     @Singleton
     @Provides
-    @Named("runningTestsOnCi")
-    boolean runningTestsOnCi() {
-        return Optional.ofNullable(Boolean.valueOf(System.getProperty("runningTestsOnCi"))).orElse(false);
-    }
-
-    @Singleton
-    @Provides
-    @Named("runningInProduction")
-    boolean runningInProduction() {
-        return Optional.ofNullable(Boolean.valueOf(System.getenv("production"))).orElse(false);
+    @Named("environment")
+    Environment environment() {
+        final String environmentEnvVar = System.getenv("MEAL_PLANNR_ENVIRONMENT");
+        return environmentEnvVar != null ? Environment.valueOf(environmentEnvVar) : Environment.LOCAL;
     }
 
     @Singleton

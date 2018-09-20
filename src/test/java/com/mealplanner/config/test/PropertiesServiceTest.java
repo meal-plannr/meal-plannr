@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.mealplanner.config.PropertiesFileSelectorService;
+import com.mealplanner.config.Environment;
 import com.mealplanner.config.PropertiesService;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,46 +27,42 @@ public class PropertiesServiceTest {
 
     @Test
     public void production_values_take_precedence_over_everything() {
-        final PropertiesFileSelectorService propertiesFileSelectorService = new PropertiesFileSelectorService(false, true);
-        final PropertiesService service = new PropertiesService(propertiesFileSelectorService);
+        final PropertiesService service = new PropertiesService(Environment.PRODUCTION);
 
         final Properties props = new Properties.Builder()
                 .awsRegion("my-region")
                 .mealsTableName("the-table")
                 .dynamoEndpoint(null)
-                .needToCreateDynamoTables(false)
                 .kinesisEndPoint(null)
+                .isLocalEnvironment(false)
                 .build();
         assertPropertyValues(service, props);
     }
 
     @Test
     public void ci_values_take_precendence_over_local() {
-        final PropertiesFileSelectorService propertiesFileSelectorService = new PropertiesFileSelectorService(true, false);
-        final PropertiesService service = new PropertiesService(propertiesFileSelectorService);
+        final PropertiesService service = new PropertiesService(Environment.CI);
 
         final Properties props = new Properties.Builder()
                 .awsRegion("eu-west-2")
                 .mealsTableName("ci-meals")
                 .dynamoEndpoint(null)
-                .needToCreateDynamoTables(false)
                 .kinesisEndPoint(null)
+                .isLocalEnvironment(false)
                 .build();
         assertPropertyValues(service, props);
     }
 
     @Test
     public void local_values_are_used_by_default() {
-        final PropertiesFileSelectorService propertiesFileSelectorService = new PropertiesFileSelectorService(false, false);
-
-        final PropertiesService service = new PropertiesService(propertiesFileSelectorService);
+        final PropertiesService service = new PropertiesService(Environment.LOCAL);
 
         final Properties props = new Properties.Builder()
                 .awsRegion("eu-west-1")
                 .mealsTableName("meals")
                 .dynamoEndpoint("http://localhost:4569")
-                .needToCreateDynamoTables(true)
                 .kinesisEndPoint("http://localhost:4568")
+                .isLocalEnvironment(true)
                 .build();
         assertPropertyValues(service, props);
     }
@@ -75,23 +71,23 @@ public class PropertiesServiceTest {
         assertAll(() -> assertThat(service.getAwsRegion()).isEqualTo(expectedProperties.getAwsRegion()),
                 () -> assertThat(service.getMealsTableName()).isEqualTo(expectedProperties.getMealsTableName()),
                 () -> assertThat(service.getDynamoEndpoint()).isEqualTo(expectedProperties.getDynamoEndpoint()),
-                () -> assertThat(service.needToCreateDynamoTables()).isEqualTo(expectedProperties.getNeedToCreateDynamoTables()),
-                () -> assertThat(service.getKinesisEndpoint()).isEqualTo(expectedProperties.getKinesisEndpoint()));
+                () -> assertThat(service.getKinesisEndpoint()).isEqualTo(expectedProperties.getKinesisEndpoint()),
+                () -> assertThat(service.isLocalEnvironment()).isEqualTo(expectedProperties.isLocalEnvironment()));
     }
 
     static class Properties {
         private final String awsRegion;
         private final String mealsTableName;
         private final String dynamoEndpoint;
-        private final boolean needToCreateDynamoTables;
         private final String kinesisEndpoint;
+        private final boolean isLocalEnvironment;
 
         public Properties(final Builder builder) {
             this.awsRegion = builder.awsRegion;
             this.mealsTableName = builder.mealsTableName;
             this.dynamoEndpoint = builder.dynamoEndpoint;
-            this.needToCreateDynamoTables = builder.needToCreateDynamoTables;
             this.kinesisEndpoint = builder.kinesisEndpoint;
+            this.isLocalEnvironment = builder.isLocalEnvironment;
         }
 
         public String getAwsRegion() {
@@ -106,20 +102,20 @@ public class PropertiesServiceTest {
             return dynamoEndpoint;
         }
 
-        public boolean getNeedToCreateDynamoTables() {
-            return needToCreateDynamoTables;
-        }
-
         public String getKinesisEndpoint() {
             return kinesisEndpoint;
+        }
+
+        public boolean isLocalEnvironment() {
+            return isLocalEnvironment;
         }
 
         static class Builder {
             private String awsRegion;
             private String mealsTableName;
             private String dynamoEndpoint;
-            private boolean needToCreateDynamoTables;
             private String kinesisEndpoint;
+            private boolean isLocalEnvironment;
 
             public Builder awsRegion(final String awsRegion) {
                 this.awsRegion = awsRegion;
@@ -136,13 +132,13 @@ public class PropertiesServiceTest {
                 return this;
             }
 
-            public Builder needToCreateDynamoTables(final boolean needToCreateDynamoTables) {
-                this.needToCreateDynamoTables = needToCreateDynamoTables;
+            public Builder kinesisEndPoint(final String kinesisEndpoint) {
+                this.kinesisEndpoint = kinesisEndpoint;
                 return this;
             }
 
-            public Builder kinesisEndPoint(final String kinesisEndpoint) {
-                this.kinesisEndpoint = kinesisEndpoint;
+            public Builder isLocalEnvironment(final boolean isLocalEnvironment) {
+                this.isLocalEnvironment = isLocalEnvironment;
                 return this;
             }
 
