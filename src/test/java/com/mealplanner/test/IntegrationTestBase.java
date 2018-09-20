@@ -1,8 +1,13 @@
 package com.mealplanner.test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
@@ -16,6 +21,11 @@ import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
+import com.amazonaws.services.kinesis.AmazonKinesis;
+import com.amazonaws.services.kinesis.model.CreateStreamRequest;
+import com.amazonaws.services.kinesis.model.DescribeStreamRequest;
+import com.amazonaws.services.kinesis.model.DescribeStreamResult;
+import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.mealplanner.config.PropertiesService;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
@@ -39,7 +49,13 @@ public class IntegrationTestBase {
     @Named("mealsDynamoDbMapper")
     DynamoDBMapper mealsMapper;
 
+    @Inject
+    AmazonKinesis amazonKinesis;
+
     public IntegrationTestBase() {
+        System.setProperty("com.amazonaws.sdk.disableCertChecking", "true");
+        System.setProperty("com.amazonaws.sdk.disableCbor", "true");
+
         appComponent = DaggerAppTestComponent.builder().build();
         appComponent.inject(this);
     }
@@ -49,9 +65,37 @@ public class IntegrationTestBase {
         if (!localMealsTableCreated && needToCreateTables()) {
             createMealsTable();
             localMealsTableCreated = true;
+
+            createKinesisStream();
         }
 
         deleteMeals();
+    }
+
+    private void createKinesisStream() {
+        final String streamName = "savedMeals";
+        final Integer streamSize = 1;
+
+        final CreateStreamRequest createStreamRequest = new CreateStreamRequest();
+        createStreamRequest.setStreamName(streamName);
+        createStreamRequest.setShardCount(streamSize);
+        amazonKinesis.createStream(createStreamRequest);
+
+        Awaitility.await()
+                .atMost(10, TimeUnit.SECONDS)
+                .untilAsserted(() -> assertThat(getStreamStatus(streamName)).isEqualTo("ACTIVE"));
+    }
+
+    private String getStreamStatus(final String myStreamName) {
+        final DescribeStreamRequest describeStreamRequest = new DescribeStreamRequest();
+        describeStreamRequest.setStreamName(myStreamName);
+        try {
+            final DescribeStreamResult describeStreamResponse = amazonKinesis.describeStream(describeStreamRequest);
+            return describeStreamResponse.getStreamDescription().getStreamStatus();
+        } catch (final ResourceNotFoundException e) {
+        }
+
+        return null;
     }
 
     private boolean needToCreateTables() {

@@ -1,6 +1,7 @@
 package com.mealplanner.config;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -16,6 +17,8 @@ public class PropertiesService {
     public static final String DYNAMO_MEALS_TABLE_NAME = "dynamo.mealsTableName";
     public static final String DYNAMO_ENDPOINT = "dynamo.endpoint";
     public static final String DYNAMO_CREATE_TABLES = "dynamo.createTables";
+    public static final String KINESIS_HOST = "kinesis.host";
+    public static final String KINESIS_PORT = "kinesis.port";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesService.class);
 
@@ -52,5 +55,14 @@ public class PropertiesService {
 
     public boolean needToCreateDynamoTables() {
         return Boolean.valueOf(props.getProperty(DYNAMO_CREATE_TABLES));
+    }
+
+    public String getKinesisHost() {
+        return props.getProperty(KINESIS_HOST);
+    }
+
+    public Optional<Long> getKinesisPort() {
+        final String port = props.getProperty(KINESIS_PORT);
+        return port != null ? Optional.of(Long.valueOf(port)) : Optional.empty();
     }
 }

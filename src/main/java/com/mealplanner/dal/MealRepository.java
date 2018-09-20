@@ -1,5 +1,6 @@
 package com.mealplanner.dal;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.kinesis.producer.KinesisProducer;
+import com.amazonaws.services.kinesis.producer.UserRecord;
 import com.mealplanner.domain.Meal;
 
 @Singleton
@@ -26,12 +29,14 @@ public class MealRepository {
 
     private final DynamoDBMapper mapper;
     private final DynamoDbFactory<Meal> dynamoDbFactory;
+    private final KinesisProducer kinesisProducer;
 
     @Inject
     public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper,
-            @Named("mealsDynamoDbFactory") final DynamoDbFactory<Meal> dynamoDbFactory) {
+            @Named("mealsDynamoDbFactory") final DynamoDbFactory<Meal> dynamoDbFactory, final KinesisProducer kinesisProducer) {
         this.mapper = mapper;
         this.dynamoDbFactory = dynamoDbFactory;
+        this.kinesisProducer = kinesisProducer;
     }
 
     public Meal get(final String mealId, final String userId) {
@@ -76,5 +81,11 @@ public class MealRepository {
     public void save(final Meal meal) {
         LOGGER.info("Saving meal [{}]", meal);
         mapper.save(meal);
+
+        final UserRecord userRecord = new UserRecord();
+        userRecord.setStreamName("savedMeals");
+        userRecord.setPartitionKey(meal.getUserId());
+        userRecord.setData(ByteBuffer.wrap(meal.getId().getBytes()));
+        kinesisProducer.addUserRecord(userRecord);
     }
 }
