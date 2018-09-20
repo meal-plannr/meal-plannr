@@ -1,7 +1,5 @@
 package com.mealplanner.test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -53,7 +51,6 @@ public class IntegrationTestBase {
     AmazonKinesis amazonKinesis;
 
     public IntegrationTestBase() {
-        System.setProperty("com.amazonaws.sdk.disableCertChecking", "true");
         System.setProperty("com.amazonaws.sdk.disableCbor", "true");
 
         appComponent = DaggerAppTestComponent.builder().build();
@@ -66,36 +63,38 @@ public class IntegrationTestBase {
             createMealsTable();
             localMealsTableCreated = true;
 
-            createKinesisStream();
+            createKinesisStreamIfNecessary();
         }
 
         deleteMeals();
     }
 
-    private void createKinesisStream() {
+    private void createKinesisStreamIfNecessary() {
         final String streamName = "savedMeals";
-        final Integer streamSize = 1;
+        if (!streamIsActive(streamName)) {
+            final Integer streamSize = 1;
 
-        final CreateStreamRequest createStreamRequest = new CreateStreamRequest();
-        createStreamRequest.setStreamName(streamName);
-        createStreamRequest.setShardCount(streamSize);
-        amazonKinesis.createStream(createStreamRequest);
+            final CreateStreamRequest createStreamRequest = new CreateStreamRequest();
+            createStreamRequest.setStreamName(streamName);
+            createStreamRequest.setShardCount(streamSize);
+            amazonKinesis.createStream(createStreamRequest);
 
-        Awaitility.await()
-                .atMost(10, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertThat(getStreamStatus(streamName)).isEqualTo("ACTIVE"));
+            Awaitility.await()
+                    .atMost(10, TimeUnit.SECONDS)
+                    .until(() -> streamIsActive(streamName));
+        }
     }
 
-    private String getStreamStatus(final String myStreamName) {
+    private boolean streamIsActive(final String myStreamName) {
         final DescribeStreamRequest describeStreamRequest = new DescribeStreamRequest();
         describeStreamRequest.setStreamName(myStreamName);
         try {
             final DescribeStreamResult describeStreamResponse = amazonKinesis.describeStream(describeStreamRequest);
-            return describeStreamResponse.getStreamDescription().getStreamStatus();
+            return describeStreamResponse.getStreamDescription().getStreamStatus().equals("ACTIVE");
         } catch (final ResourceNotFoundException e) {
         }
 
-        return null;
+        return false;
     }
 
     private boolean needToCreateTables() {

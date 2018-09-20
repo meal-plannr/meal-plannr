@@ -10,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
-import com.amazonaws.services.kinesis.producer.KinesisProducer;
-import com.amazonaws.services.kinesis.producer.KinesisProducerConfiguration;
 
 import dagger.Module;
 import dagger.Provides;
@@ -35,31 +33,12 @@ public class InfrastructureModule {
 
     @Singleton
     @Provides
-    KinesisProducer kinesisProducer(final PropertiesService propertiesService) {
-        final KinesisProducerConfiguration config = new KinesisProducerConfiguration()
-                .setRegion(propertiesService.getAwsRegion());
-        final String host = propertiesService.getKinesisHost();
-        final Optional<Long> port = propertiesService.getKinesisPort();
-        if (StringUtils.isNotBlank(host)) {
-            config.setKinesisEndpoint(host);
-        }
-        if (port.isPresent()) {
-            config.setKinesisPort(port.get());
-        }
-
-        return new KinesisProducer(config);
-    }
-
-    @Singleton
-    @Provides
     AmazonKinesis kinesisClient(final PropertiesService properties) {
         final AmazonKinesisClientBuilder builder = AmazonKinesisClientBuilder.standard();
 
         final String awsRegion = properties.getAwsRegion();
-        final String host = properties.getKinesisHost();
-        final Optional<Long> port = properties.getKinesisPort();
-        if (StringUtils.isNotBlank(host) && port.isPresent()) {
-            final String endpoint = "https://" + host + ":" + port.get();
+        final String endpoint = properties.getKinesisEndpoint();
+        if (StringUtils.isNotBlank(endpoint)) {
             builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, awsRegion));
         } else {
             builder.withRegion(awsRegion);

@@ -15,8 +15,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.kinesis.producer.KinesisProducer;
-import com.amazonaws.services.kinesis.producer.UserRecord;
+import com.amazonaws.services.kinesis.AmazonKinesis;
+import com.amazonaws.services.kinesis.model.PutRecordRequest;
 import com.mealplanner.domain.Meal;
 
 @Singleton
@@ -29,14 +29,14 @@ public class MealRepository {
 
     private final DynamoDBMapper mapper;
     private final DynamoDbFactory<Meal> dynamoDbFactory;
-    private final KinesisProducer kinesisProducer;
+    private final AmazonKinesis kinesisClient;
 
     @Inject
     public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper,
-            @Named("mealsDynamoDbFactory") final DynamoDbFactory<Meal> dynamoDbFactory, final KinesisProducer kinesisProducer) {
+            @Named("mealsDynamoDbFactory") final DynamoDbFactory<Meal> dynamoDbFactory, final AmazonKinesis kinesisClient) {
         this.mapper = mapper;
         this.dynamoDbFactory = dynamoDbFactory;
-        this.kinesisProducer = kinesisProducer;
+        this.kinesisClient = kinesisClient;
     }
 
     public Meal get(final String mealId, final String userId) {
@@ -82,10 +82,10 @@ public class MealRepository {
         LOGGER.info("Saving meal [{}]", meal);
         mapper.save(meal);
 
-        final UserRecord userRecord = new UserRecord();
-        userRecord.setStreamName("savedMeals");
-        userRecord.setPartitionKey(meal.getUserId());
-        userRecord.setData(ByteBuffer.wrap(meal.getId().getBytes()));
-        kinesisProducer.addUserRecord(userRecord);
+        final PutRecordRequest putRecordRequest = new PutRecordRequest();
+        putRecordRequest.setStreamName("savedMeals");
+        putRecordRequest.setPartitionKey(meal.getUserId());
+        putRecordRequest.setData(ByteBuffer.wrap(meal.getId().getBytes()));
+        kinesisClient.putRecord(putRecordRequest);
     }
 }

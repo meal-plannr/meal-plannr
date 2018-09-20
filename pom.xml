@@ -22,7 +22,7 @@
 
         <!-- dependency versions -->
         <aws.sdk.version>1.11.412</aws.sdk.version>
-        <jackson.version>2.8.5</jackson.version>
+        <jackson.version>2.6.7</jackson.version>
         <symphonia.lambda-logging.version>1.0.0</symphonia.lambda-logging.version>
         <dagger.version>2.17</dagger.version>
         <junit.version>5.2.0</junit.version>
@@ -33,6 +33,7 @@
         <reflections.version>0.9.11</reflections.version>
         <guava.version>26.0-jre</guava.version>
         <lambda-java-log4j.version>1.0.0</lambda-java-log4j.version>
+        <awaitility.version>3.1.2</awaitility.version>
     </properties>
 
     <dependencyManagement>
@@ -131,6 +132,12 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.awaitility</groupId>
+                <artifactId>awaitility</artifactId>
+                <version>${awaitility.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -216,19 +223,11 @@
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>amazon-kinesis-client</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>amazon-kinesis-producer</artifactId>
-            <version>0.12.9</version>
+            <artifactId>aws-java-sdk-kinesis</artifactId>
         </dependency>
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>3.1.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
