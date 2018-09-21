@@ -17,6 +17,10 @@ import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.model.PutRecordRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.mealplanner.config.PropertiesService;
 import com.mealplanner.domain.Meal;
 
 @Singleton
@@ -30,13 +34,15 @@ public class MealRepository {
     private final DynamoDBMapper mapper;
     private final DynamoDbFactory<Meal> dynamoDbFactory;
     private final AmazonKinesis kinesisClient;
+    private final PropertiesService properties;
 
     @Inject
     public MealRepository(@Named("mealsDynamoDbMapper") final DynamoDBMapper mapper,
-            @Named("mealsDynamoDbFactory") final DynamoDbFactory<Meal> dynamoDbFactory, final AmazonKinesis kinesisClient) {
+            @Named("mealsDynamoDbFactory") final DynamoDbFactory<Meal> dynamoDbFactory, final AmazonKinesis kinesisClient, final PropertiesService properties) {
         this.mapper = mapper;
         this.dynamoDbFactory = dynamoDbFactory;
         this.kinesisClient = kinesisClient;
+        this.properties = properties;
     }
 
     public Meal get(final String mealId, final String userId) {
@@ -83,9 +89,27 @@ public class MealRepository {
         mapper.save(meal);
 
         final PutRecordRequest putRecordRequest = new PutRecordRequest();
-        putRecordRequest.setStreamName("savedMeals");
+
+        final String streamName = properties.getSavedMealsStreamName();
+        putRecordRequest.setStreamName(streamName);
+
         putRecordRequest.setPartitionKey(meal.getUserId());
-        putRecordRequest.setData(ByteBuffer.wrap(meal.getId().getBytes()));
+
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final ObjectNode node = objectMapper.createObjectNode();
+        node.put("mealId", meal.getId());
+        node.put("userId", meal.getUserId());
+        LOGGER.debug("About to send Kinesis record for meal [{}] and user [{}]", meal.getId(), meal.getUserId());
+
+        try {
+            final byte[] data = objectMapper.writeValueAsBytes(node);
+            putRecordRequest.setData(ByteBuffer.wrap(data));
+        } catch (final JsonProcessingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         kinesisClient.putRecord(putRecordRequest);
+        LOGGER.debug("Sent Kinesis record for meal [{}] and user [{}]", meal.getId(), meal.getUserId());
     }
 }

@@ -20,7 +20,7 @@ public class InfrastructureModule {
     @Named("environment")
     Environment environment() {
         final String environmentEnvVar = System.getenv("MEAL_PLANNR_ENVIRONMENT");
-        return environmentEnvVar != null ? Environment.valueOf(environmentEnvVar) : Environment.LOCAL;
+        return environmentEnvVar != null ? Environment.getEnvironmentForCode(environmentEnvVar) : Environment.LOCAL;
     }
 
     @Singleton

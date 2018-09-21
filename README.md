@@ -22,3 +22,19 @@ The integration tests rely on [Localstack](https://github.com/localstack/localst
    `ENTRYPOINT=-d SERVICES=dynamodb,kinesis localstack start --docker`
 
    `ENTRYPOINT=-d` runs Localstack as a daemon in the background
+
+## Running CircleCI locally
+
+It's possible to run the CircleCI build locally so you can verify changes to the config/CI specific changes.
+
+1. Install [CircleCI Local CLI](https://circleci.com/docs/2.0/local-cli/)
+
+2. Setup circleci
+
+    `circleci setup`
+
+3. Run
+
+    `circleci local execute -e AWS_ACCESS_KEY_ID=<access key ID> -e AWS_SECRET_ACCESS_KEY=<secret key>`
+
+    Replace `<access key ID>` and `<secret key>` with values for an account that has access to deploy the Serverless infrastructure

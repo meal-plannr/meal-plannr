@@ -23,6 +23,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.kinesis.AmazonKinesis;
+import com.mealplanner.config.PropertiesService;
 import com.mealplanner.dal.DynamoDbFactory;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
@@ -45,6 +46,9 @@ public class MealRepositoryTest {
 
     @Mock
     private AmazonKinesis kinesisClient;
+
+    @Mock
+    private PropertiesService propertiesService;
 
     @Mock
     private PaginatedQueryList<Meal> paginatedQueryList;
@@ -146,6 +150,7 @@ public class MealRepositoryTest {
 
     @Test
     public void meal_is_saved() {
+        when(propertiesService.getSavedMealsStreamName()).thenReturn("stream");
         when(mockMeal.getId()).thenReturn(MEAL_ID);
         mealRepository.save(mockMeal);
 

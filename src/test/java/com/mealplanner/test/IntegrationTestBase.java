@@ -110,7 +110,7 @@ public class IntegrationTestBase {
     private void createKinesisStreamIfNecessary() {
         LOGGER.info("Creating Kinesis stream if it doesn't already exist");
 
-        final String streamName = "savedMeals";
+        final String streamName = properties.getSavedMealsStreamName();
         if (!streamIsActive(streamName)) {
             LOGGER.info("Kinesis stream does not exist so creating it");
 

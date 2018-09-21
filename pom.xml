@@ -34,6 +34,7 @@
         <guava.version>26.0-jre</guava.version>
         <lambda-java-log4j.version>1.0.0</lambda-java-log4j.version>
         <awaitility.version>3.1.2</awaitility.version>
+        <lambda-java-events.version>2.2.2</lambda-java-events.version>
     </properties>
 
     <dependencyManagement>
@@ -138,6 +139,11 @@
                 <version>${awaitility.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-lambda-java-events</artifactId>
+                <version>${lambda-java-events.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -229,6 +235,10 @@
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-events</artifactId>
         </dependency>
     </dependencies>
 

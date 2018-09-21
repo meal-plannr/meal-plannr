@@ -23,6 +23,7 @@ public class PropertiesServiceTest {
     public static void setEnvVars() {
         ENVIRONMENT_VARIABLES.set("region", "my-region");
         ENVIRONMENT_VARIABLES.set("tableName", "the-table");
+        ENVIRONMENT_VARIABLES.set("savedMealsStreamName", "the-saved-meals-stream");
     }
 
     @Test
@@ -35,6 +36,7 @@ public class PropertiesServiceTest {
                 .dynamoEndpoint(null)
                 .kinesisEndPoint(null)
                 .isLocalEnvironment(false)
+                .savedMealsStreamName("the-saved-meals-stream")
                 .build();
         assertPropertyValues(service, props);
     }
@@ -49,6 +51,7 @@ public class PropertiesServiceTest {
                 .dynamoEndpoint(null)
                 .kinesisEndPoint(null)
                 .isLocalEnvironment(false)
+                .savedMealsStreamName("ci-saved-meals")
                 .build();
         assertPropertyValues(service, props);
     }
@@ -63,6 +66,7 @@ public class PropertiesServiceTest {
                 .dynamoEndpoint("http://localhost:4569")
                 .kinesisEndPoint("http://localhost:4568")
                 .isLocalEnvironment(true)
+                .savedMealsStreamName("saved-meals")
                 .build();
         assertPropertyValues(service, props);
     }
@@ -72,7 +76,8 @@ public class PropertiesServiceTest {
                 () -> assertThat(service.getMealsTableName()).isEqualTo(expectedProperties.getMealsTableName()),
                 () -> assertThat(service.getDynamoEndpoint()).isEqualTo(expectedProperties.getDynamoEndpoint()),
                 () -> assertThat(service.getKinesisEndpoint()).isEqualTo(expectedProperties.getKinesisEndpoint()),
-                () -> assertThat(service.isLocalEnvironment()).isEqualTo(expectedProperties.isLocalEnvironment()));
+                () -> assertThat(service.isLocalEnvironment()).isEqualTo(expectedProperties.isLocalEnvironment()),
+                () -> assertThat(service.getSavedMealsStreamName()).isEqualTo(expectedProperties.getSavedMealsStreamName()));
     }
 
     static class Properties {
@@ -81,6 +86,7 @@ public class PropertiesServiceTest {
         private final String dynamoEndpoint;
         private final String kinesisEndpoint;
         private final boolean isLocalEnvironment;
+        private final String savedMealsStreamName;
 
         public Properties(final Builder builder) {
             this.awsRegion = builder.awsRegion;
@@ -88,6 +94,7 @@ public class PropertiesServiceTest {
             this.dynamoEndpoint = builder.dynamoEndpoint;
             this.kinesisEndpoint = builder.kinesisEndpoint;
             this.isLocalEnvironment = builder.isLocalEnvironment;
+            this.savedMealsStreamName = builder.savedMealsStreamName;
         }
 
         public String getAwsRegion() {
@@ -110,12 +117,17 @@ public class PropertiesServiceTest {
             return isLocalEnvironment;
         }
 
+        public String getSavedMealsStreamName() {
+            return savedMealsStreamName;
+        }
+
         static class Builder {
             private String awsRegion;
             private String mealsTableName;
             private String dynamoEndpoint;
             private String kinesisEndpoint;
             private boolean isLocalEnvironment;
+            private String savedMealsStreamName;
 
             public Builder awsRegion(final String awsRegion) {
                 this.awsRegion = awsRegion;
@@ -139,6 +151,11 @@ public class PropertiesServiceTest {
 
             public Builder isLocalEnvironment(final boolean isLocalEnvironment) {
                 this.isLocalEnvironment = isLocalEnvironment;
+                return this;
+            }
+
+            public Builder savedMealsStreamName(final String savedMealsStreamName) {
+                this.savedMealsStreamName = savedMealsStreamName;
                 return this;
             }
 

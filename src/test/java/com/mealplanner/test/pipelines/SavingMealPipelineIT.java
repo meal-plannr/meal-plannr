@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.concurrent.TimeUnit;
 
 import org.awaitility.Awaitility;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 
 import com.mealplanner.domain.Meal;
 import com.mealplanner.test.IntegrationTestBase;
 
-@Disabled
+@EnabledIfEnvironmentVariable(named = "MEAL_PLANNR_ENVIRONMENT", matches = "ci")
 public class SavingMealPipelineIT extends IntegrationTestBase {
 
     @Test
