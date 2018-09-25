@@ -3,11 +3,13 @@ package com.mealplanner.dal.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 import com.mealplanner.test.IntegrationTestBase;
@@ -51,8 +53,9 @@ public class MealRepositoryIT extends IntegrationTestBase {
         final Meal meal1 = new Meal.Builder().mealId(MEAL1_ID).userId(USER1_ID).description("First description").build();
         mealRepository.save(meal1);
 
+        final Meal meal2 = mealRepository.get(MEAL1_ID, USER1_ID);
         final String updatedDescription = "Updated description";
-        final Meal meal2 = new Meal.Builder().mealId(MEAL1_ID).userId(USER1_ID).description(updatedDescription).build();
+        meal2.setDescription(updatedDescription);
         mealRepository.save(meal2);
 
         final Meal retrievedMeal = mealRepository.get(MEAL1_ID, USER1_ID);
@@ -68,7 +71,7 @@ public class MealRepositoryIT extends IntegrationTestBase {
         mealRepository.save(meal2);
 
         final List<Meal> meals = mealRepository.getAllMealsForUser(USER1_ID);
-        Assertions.assertThat(meals).containsExactlyInAnyOrder(meal1, meal2);
+        assertThat(meals).containsExactlyInAnyOrder(meal1, meal2);
     }
 
     @Test
@@ -103,5 +106,51 @@ public class MealRepositoryIT extends IntegrationTestBase {
         assertThatExceptionOfType(IllegalStateException.class)
                 .isThrownBy(() -> mealRepository.delete(MEAL1_ID, USER1_ID))
                 .withMessage(MealRepository.ERROR_TEMPLATE_NO_MEAL_FOUND_FOR_ID_AND_USER_ID, MEAL1_ID, USER1_ID);
+    }
+
+    @Test
+    public void version_is_set_when_saving_new_entity() {
+        final Meal meal = new Meal.Builder().userId(USER1_ID).build();
+        mealRepository.save(meal);
+
+        assertThat(meal.getVersion()).isEqualTo(1);
+    }
+
+    @Test
+    public void version_is_updated_when_saving_existing_entity() {
+        final Meal meal = new Meal.Builder().userId(USER1_ID).build();
+        mealRepository.save(meal);
+
+        final Meal retrievedMeal = mealRepository.get(meal.getId(), USER1_ID);
+        retrievedMeal.setDescription("update description");
+        mealRepository.save(retrievedMeal);
+
+        assertThat(retrievedMeal.getVersion()).isEqualTo(2);
+    }
+
+    @Test
+    public void exception_is_thrown_when_updating_old_version() {
+        final Meal meal1 = new Meal.Builder().userId(USER1_ID).description("a meal").build();
+        mealRepository.save(meal1);
+
+        final Meal firstRetrievedMeal = mealRepository.get(meal1.getId(), USER1_ID);
+
+        final Meal secondRetrievedMeal = mealRepository.get(meal1.getId(), USER1_ID);
+        secondRetrievedMeal.setDescription("an updated meal");
+        mealRepository.save(secondRetrievedMeal);
+
+        firstRetrievedMeal.setDescription("an update to a stale meal");
+        assertThatExceptionOfType(ConditionalCheckFailedException.class)
+                .isThrownBy(() -> mealRepository.save(firstRetrievedMeal));
+    }
+
+    @Test
+    public void meal_can_be_saved_with_a_date() {
+        final LocalDate now = LocalDate.now();
+        final Meal meal = new Meal.Builder().userId(USER1_ID).date(now).build();
+        mealRepository.save(meal);
+
+        final Meal retrievedMeal = mealRepository.get(meal.getId(), USER1_ID);
+        assertThat(retrievedMeal.getDate()).isEqualTo(now);
     }
 }
