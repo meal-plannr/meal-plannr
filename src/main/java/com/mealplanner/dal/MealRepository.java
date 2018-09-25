@@ -84,13 +84,16 @@ public class MealRepository {
         return new Meal();
     }
 
-    public void save(final Meal meal) {
-        LOGGER.info("Saving meal [{}]", meal);
-        mapper.save(meal);
+    public void saveAndSendMessage(final Meal meal) {
+        save(meal);
+
+        LOGGER.info("Creating Kinesis record");
 
         final PutRecordRequest putRecordRequest = new PutRecordRequest();
 
         final String streamName = properties.getSavedMealsStreamName();
+        LOGGER.info("Stream name [{}]", streamName);
+
         putRecordRequest.setStreamName(streamName);
 
         putRecordRequest.setPartitionKey(meal.getUserId());
@@ -99,7 +102,8 @@ public class MealRepository {
         final ObjectNode node = objectMapper.createObjectNode();
         node.put("mealId", meal.getId());
         node.put("userId", meal.getUserId());
-        LOGGER.debug("About to send Kinesis record for meal [{}] and user [{}]", meal.getId(), meal.getUserId());
+        LOGGER.info("About to send Kinesis record for meal [{}] and user [{}]", meal.getId(), meal.getUserId());
+        LOGGER.info("JSON node {}", node);
 
         try {
             final byte[] data = objectMapper.writeValueAsBytes(node);
@@ -111,5 +115,12 @@ public class MealRepository {
 
         kinesisClient.putRecord(putRecordRequest);
         LOGGER.debug("Sent Kinesis record for meal [{}] and user [{}]", meal.getId(), meal.getUserId());
+    }
+
+    public void save(final Meal meal) {
+        LOGGER.info("Saving meal [{}]", meal);
+        mapper.save(meal);
+
+        LOGGER.info("Saved meal [{}]", meal);
     }
 }

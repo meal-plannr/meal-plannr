@@ -78,8 +78,17 @@ functions:
           method: delete
           cors: true
           authorizer: aws_iam
-  savedMeal:
-    handler: com.mealplanner.function.SavedMealKinesis
+  updateSavedMealDescription:
+    handler: com.mealplanner.function.UpdateSavedMealDescriptionHandler
+    events:
+      - stream:
+          type: kinesis
+          arn:
+            Fn::GetAtt:
+              - SavedMealsStream
+              - Arn
+  updateSavedMealDate:
+    handler: com.mealplanner.function.UpdateSavedMealDateHandler
     events:
       - stream:
           type: kinesis

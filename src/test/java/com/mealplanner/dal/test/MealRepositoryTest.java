@@ -150,8 +150,8 @@ public class MealRepositoryTest {
 
     @Test
     public void meal_is_saved() {
-        when(propertiesService.getSavedMealsStreamName()).thenReturn("stream");
-        when(mockMeal.getId()).thenReturn(MEAL_ID);
+        //when(propertiesService.getSavedMealsStreamName()).thenReturn("stream");
+        //when(mockMeal.getId()).thenReturn(MEAL_ID);
         mealRepository.save(mockMeal);
 
         verify(mapper).save(mockMeal);

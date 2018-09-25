@@ -1,6 +1,7 @@
 package com.mealplanner.function;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
@@ -20,9 +22,9 @@ import com.mealplanner.config.DaggerAppComponent;
 import com.mealplanner.dal.MealRepository;
 import com.mealplanner.domain.Meal;
 
-public class SavedMealKinesis implements RequestHandler<KinesisEvent, Void> {
+public class UpdateSavedMealDateHandler implements RequestHandler<KinesisEvent, Void> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SavedMealKinesis.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSavedMealDateHandler.class);
 
     @Inject
     MealRepository mealRepository;
@@ -31,17 +33,17 @@ public class SavedMealKinesis implements RequestHandler<KinesisEvent, Void> {
     @Named("mealsDynamoDbMapper")
     DynamoDBMapper mapper;
 
-    public SavedMealKinesis() {
+    public UpdateSavedMealDateHandler() {
         final AppComponent component = DaggerAppComponent.builder().build();
         component.inject(this);
     }
 
     @Override
     public Void handleRequest(final KinesisEvent event, final Context context) {
-        LOGGER.debug("Received Kinesis event");
+        LOGGER.info("Received Kinesis event");
 
         for (final KinesisEventRecord record : event.getRecords()) {
-            LOGGER.debug("Processing Kinesis event record");
+            LOGGER.info("Processing Kinesis event record");
 
             final byte[] data = record.getKinesis().getData().array();
 
@@ -53,18 +55,32 @@ public class SavedMealKinesis implements RequestHandler<KinesisEvent, Void> {
 
                 LOGGER.debug("Looking up meal for ID [{}] and user [{}]", mealId, userId);
 
-                final Meal meal = mealRepository.get(mealId, userId);
-                meal.setDescription("UPDATED");
-                mapper.save(meal);
+                saveWithRetry(mealId, userId);
 
-                LOGGER.debug("Saving meal with updated description");
+                LOGGER.info("Saving meal with updated date");
             } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                LOGGER.error("Error updating meal date", e);
+                throw new IllegalStateException("Error updating meal date", e);
             }
         }
 
         return null;
     }
 
+    private void saveWithRetry(final String mealId, final String userId) {
+        final int maxRetries = 10;
+        int attempt = 0;
+
+        while (attempt < maxRetries) {
+            final Meal meal = mealRepository.get(mealId, userId);
+            meal.setDate(LocalDate.now());
+            try {
+                mapper.save(meal);
+            } catch (final ConditionalCheckFailedException e) {
+                LOGGER.info("Save failed due to old version. Attempt [[{}] of [{}]", attempt, maxRetries);
+            }
+
+            attempt++;
+        }
+    }
 }

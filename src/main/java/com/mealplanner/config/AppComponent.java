@@ -7,7 +7,8 @@ import com.mealplanner.function.DeleteMealHandler;
 import com.mealplanner.function.GetMealHandler;
 import com.mealplanner.function.ListMealsHandler;
 import com.mealplanner.function.PutMealHandler;
-import com.mealplanner.function.SavedMealKinesis;
+import com.mealplanner.function.UpdateSavedMealDateHandler;
+import com.mealplanner.function.UpdateSavedMealDescriptionHandler;
 
 import dagger.Component;
 
@@ -25,5 +26,7 @@ public interface AppComponent {
 
     void inject(DeleteMealHandler handler);
 
-    void inject(SavedMealKinesis savedMealKinesis);
+    void inject(UpdateSavedMealDescriptionHandler savedMealKinesis);
+
+    void inject(UpdateSavedMealDateHandler updateSavedMealDateHandler);
 }
