@@ -6,8 +6,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -22,7 +22,7 @@ import com.mealplanner.function.util.HandlerUtil;
 public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGatewayResponse> {
 
     public static final String ERROR_MESSAGE_TEMPLATE = "Error retrieving meal with request [%s]";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ListMealsHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(ListMealsHandler.class);
 
     @Inject
     MealRepository repository;

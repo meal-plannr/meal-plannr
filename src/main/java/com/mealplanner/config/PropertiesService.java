@@ -7,8 +7,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Singleton
 public class PropertiesService {
@@ -24,7 +24,7 @@ public class PropertiesService {
     public static final String KINESIS_ENDPOINT = "kinesis.endpoint";
     public static final String KINESIS_SAVED_MEALS_STREAM_NAME = "kinesis.savedMealsStreamName";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesService.class);
+    private static final Logger LOGGER = LogManager.getLogger(PropertiesService.class);
 
     private final Properties props = new Properties();
     private final Environment environment;

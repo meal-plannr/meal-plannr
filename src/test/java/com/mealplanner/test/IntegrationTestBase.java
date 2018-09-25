@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -32,7 +32,7 @@ import com.mealplanner.domain.Meal;
 
 public class IntegrationTestBase {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IntegrationTestBase.class);
+    private static final Logger LOGGER = LogManager.getLogger(IntegrationTestBase.class);
 
     private static boolean localSetupComplete = false;
 

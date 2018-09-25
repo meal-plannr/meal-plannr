@@ -6,8 +6,8 @@ import java.time.LocalDate;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
@@ -24,7 +24,7 @@ import com.mealplanner.domain.Meal;
 
 public class UpdateSavedMealDateHandler implements RequestHandler<KinesisEvent, Void> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSavedMealDateHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(UpdateSavedMealDateHandler.class);
 
     @Inject
     MealRepository mealRepository;
