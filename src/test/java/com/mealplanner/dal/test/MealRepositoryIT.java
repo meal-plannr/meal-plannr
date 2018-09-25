@@ -3,6 +3,7 @@ package com.mealplanner.dal.test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.assertj.core.api.Assertions;
@@ -141,5 +142,15 @@ public class MealRepositoryIT extends IntegrationTestBase {
         firstRetrievedMeal.setDescription("an update to a stale meal");
         assertThatExceptionOfType(ConditionalCheckFailedException.class)
                 .isThrownBy(() -> mealRepository.save(firstRetrievedMeal));
+    }
+
+    @Test
+    public void meal_can_be_saved_with_a_date() {
+        final LocalDate now = LocalDate.now();
+        final Meal meal = new Meal.Builder().userId(USER1_ID).date(now).build();
+        mealRepository.save(meal);
+
+        final Meal retrievedMeal = mealRepository.get(meal.getId(), USER1_ID);
+        assertThat(retrievedMeal.getDate()).isEqualTo(now);
     }
 }
