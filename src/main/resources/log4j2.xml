@@ -11,5 +11,8 @@
     <Root level="info">
       <AppenderRef ref="Lambda" />
     </Root>
+    <Logger name="com.mealplanner" level="DEBUG">
+        <AppenderRef ref="Lambda" />
+    </Logger>
   </Loggers>
 </Configuration>
