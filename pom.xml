@@ -35,6 +35,7 @@
         <lambda-java-log4j.version>1.0.0</lambda-java-log4j.version>
         <awaitility.version>3.1.2</awaitility.version>
         <lambda-java-events.version>2.2.2</lambda-java-events.version>
+        <log4j.version>2.8.2</log4j.version>
     </properties>
 
     <dependencyManagement>
@@ -65,12 +66,6 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.symphonia</groupId>
-                <artifactId>lambda-logging</artifactId>
-                <version>${symphonia.lambda-logging.version}</version>
-                <classifier>no-config</classifier>
             </dependency>
             <dependency>
                 <groupId>com.google.dagger</groupId>
@@ -145,6 +140,16 @@
                 <artifactId>aws-lambda-java-events</artifactId>
                 <version>${lambda-java-events.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -153,8 +158,6 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-lambda</artifactId>
         </dependency>
-        <!-- <dependency> <groupId>com.amazonaws</groupId> <artifactId>aws-lambda-java-log4j2</artifactId> 
-            </dependency> -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -171,8 +174,6 @@
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
         </dependency>
-        <!-- <dependency> <groupId>io.symphonia</groupId> <artifactId>lambda-logging</artifactId> 
-            <classifier>no-config</classifier> </dependency> -->
         <dependency>
             <groupId>com.google.dagger</groupId>
             <artifactId>dagger</artifactId>
@@ -244,12 +245,10 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.8.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.8.2</version>
         </dependency>
     </dependencies>
 
