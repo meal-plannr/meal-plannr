@@ -38,7 +38,7 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
     public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
         try {
             final String userId = request.getRequestContext().getIdentity().getCognitoIdentityId();
-            LOGGER.info("User ID [{}]", userId);
+            LOGGER.debug("User ID [{}]", userId);
 
             final JsonNode body = new ObjectMapper().readTree(request.getBody());
             final Meal meal = mealRepository.create();

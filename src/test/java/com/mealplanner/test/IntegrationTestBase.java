@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
@@ -62,7 +64,7 @@ public class IntegrationTestBase {
     @BeforeEach
     public void setup() throws Exception {
         if (properties.isLocalEnvironment() && !localSetupComplete) {
-            LOGGER.info("Starting local setup");
+            LOGGER.debug("Starting local setup");
 
             createMealsTable();
 
@@ -71,14 +73,14 @@ public class IntegrationTestBase {
             createKinesisStreamIfNecessary();
             localSetupComplete = true;
 
-            LOGGER.info("Local setup complete");
+            LOGGER.debug("Local setup complete");
         }
 
         deleteMeals();
     }
 
     private void createMealsTable() throws Exception {
-        LOGGER.info("Creating meals table if it doesn't already exist");
+        LOGGER.debug("Creating meals table if it doesn't already exist");
 
         final String mealsTableName = properties.getMealsTableName();
 
@@ -104,15 +106,15 @@ public class IntegrationTestBase {
 
         TableUtils.waitUntilActive(amazonDynamoDb, mealsTableName, 5000, 100);
 
-        LOGGER.info("Meals table created");
+        LOGGER.debug("Meals table created");
     }
 
     private void createKinesisStreamIfNecessary() {
-        LOGGER.info("Creating Kinesis stream if it doesn't already exist");
+        LOGGER.debug("Creating Kinesis stream if it doesn't already exist");
 
         final String streamName = properties.getSavedMealsStreamName();
         if (!streamIsActive(streamName)) {
-            LOGGER.info("Kinesis stream does not exist so creating it");
+            LOGGER.debug("Kinesis stream does not exist so creating it");
 
             final Integer streamSize = 1;
 
@@ -125,10 +127,10 @@ public class IntegrationTestBase {
                     .atMost(10, TimeUnit.SECONDS)
                     .until(() -> streamIsActive(streamName));
 
-            LOGGER.info("Finished creating Kinesis stream");
+            LOGGER.debug("Finished creating Kinesis stream");
         }
 
-        LOGGER.info("Kinesis stream is ready");
+        LOGGER.debug("Kinesis stream is ready");
     }
 
     private boolean streamIsActive(final String myStreamName) {

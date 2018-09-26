@@ -39,10 +39,10 @@ public class UpdateSavedMealDescriptionHandler implements RequestHandler<Kinesis
 
     @Override
     public Void handleRequest(final KinesisEvent event, final Context context) {
-        LOGGER.info("Received Kinesis event");
+        LOGGER.debug("Received Kinesis event");
 
         for (final KinesisEventRecord record : event.getRecords()) {
-            LOGGER.info("Processing Kinesis event record");
+            LOGGER.debug("Processing Kinesis event record");
 
             final byte[] data = record.getKinesis().getData().array();
 
@@ -50,16 +50,16 @@ public class UpdateSavedMealDescriptionHandler implements RequestHandler<Kinesis
             try {
                 final JsonNode node = objectMapper.readTree(data);
 
-                LOGGER.info("JSON node {}", node);
+                LOGGER.trace("JSON node {}", node);
 
                 final String mealId = node.get("mealId").asText();
                 final String userId = node.get("userId").asText();
 
-                LOGGER.info("Looking up meal for ID [{}] and user [{}]", mealId, userId);
+                LOGGER.debug("Looking up meal for ID [{}] and user [{}]", mealId, userId);
 
                 saveWithRetry(mealId, userId);
 
-                LOGGER.info("Saving meal with updated description");
+                LOGGER.debug("Saving meal with updated description");
             } catch (final IOException e) {
                 LOGGER.error("Error updating meal date", e);
                 throw new IllegalStateException("Error updating meal description", e);

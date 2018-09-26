@@ -40,10 +40,10 @@ public class UpdateSavedMealDateHandler implements RequestHandler<KinesisEvent, 
 
     @Override
     public Void handleRequest(final KinesisEvent event, final Context context) {
-        LOGGER.info("Received Kinesis event");
+        LOGGER.debug("Received Kinesis event");
 
         for (final KinesisEventRecord record : event.getRecords()) {
-            LOGGER.info("Processing Kinesis event record");
+            LOGGER.debug("Processing Kinesis event record");
 
             final byte[] data = record.getKinesis().getData().array();
 
@@ -57,7 +57,7 @@ public class UpdateSavedMealDateHandler implements RequestHandler<KinesisEvent, 
 
                 saveWithRetry(mealId, userId);
 
-                LOGGER.info("Saving meal with updated date");
+                LOGGER.debug("Saving meal with updated date");
             } catch (final IOException e) {
                 LOGGER.error("Error updating meal date", e);
                 throw new IllegalStateException("Error updating meal date", e);
