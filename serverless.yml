@@ -11,8 +11,6 @@ provider:
       Ref: MealsTable
     region: ${self:provider.region}
     MEAL_PLANNR_ENVIRONMENT: prod
-    savedMealsStreamName:
-      Ref: SavedMealsStream
 
   iamRoleStatements:
     - Effect: Allow
@@ -28,11 +26,6 @@ provider:
       # the specific table for the stage
       Resource:
         - "Fn::GetAtt": [ MealsTable, Arn ]
-    - Effect: Allow
-      Action:
-        - kinesis:PutRecord
-      Resource:
-        - "Fn::GetAtt": [ SavedMealsStream, Arn ]
 
 package:
   artifact: target/aws-api-dev.jar
@@ -78,24 +71,6 @@ functions:
           method: delete
           cors: true
           authorizer: aws_iam
-  updateSavedMealDescription:
-    handler: com.mealplanner.function.UpdateSavedMealDescriptionHandler
-    events:
-      - stream:
-          type: kinesis
-          arn:
-            Fn::GetAtt:
-              - SavedMealsStream
-              - Arn
-  updateSavedMealDate:
-    handler: com.mealplanner.function.UpdateSavedMealDateHandler
-    events:
-      - stream:
-          type: kinesis
-          arn:
-            Fn::GetAtt:
-              - SavedMealsStream
-              - Arn
 
 custom:
   # Our stage is based on what is passed in when running serverless
@@ -117,4 +92,3 @@ resources:
   # Cognito
   - ${file(resources/cognito-user-pool.yml)}
   - ${file(resources/cognito-identity-pool.yml)}
-  - ${file(resources/kinesis-saved-meals-stream.yml)}

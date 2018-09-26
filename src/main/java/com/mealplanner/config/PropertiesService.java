@@ -21,8 +21,6 @@ public class PropertiesService {
     public static final String AWS_REGION = "aws.region";
     public static final String DYNAMO_MEALS_TABLE_NAME = "dynamo.mealsTableName";
     public static final String DYNAMO_ENDPOINT = "dynamo.endpoint";
-    public static final String KINESIS_ENDPOINT = "kinesis.endpoint";
-    public static final String KINESIS_SAVED_MEALS_STREAM_NAME = "kinesis.savedMealsStreamName";
 
     private static final Logger LOGGER = LogManager.getLogger(PropertiesService.class);
 
@@ -36,7 +34,6 @@ public class PropertiesService {
         if (environment == Environment.PRODUCTION) {
             props.setProperty(AWS_REGION, System.getenv("region"));
             props.setProperty(DYNAMO_MEALS_TABLE_NAME, System.getenv("tableName"));
-            props.setProperty(KINESIS_SAVED_MEALS_STREAM_NAME, System.getenv("savedMealsStreamName"));
         } else {
             final String fileName = getPropertiesFilename(environment);
             try {
@@ -72,15 +69,7 @@ public class PropertiesService {
         return props.getProperty(DYNAMO_ENDPOINT);
     }
 
-    public String getKinesisEndpoint() {
-        return props.getProperty(KINESIS_ENDPOINT);
-    }
-
     public boolean isLocalEnvironment() {
         return environment == Environment.LOCAL;
-    }
-
-    public String getSavedMealsStreamName() {
-        return props.getProperty(KINESIS_SAVED_MEALS_STREAM_NAME);
     }
 }

@@ -128,17 +128,6 @@
                 <version>${guava.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.awaitility</groupId>
-                <artifactId>awaitility</artifactId>
-                <version>${awaitility.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-lambda-java-events</artifactId>
-                <version>${lambda-java-events.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j.version}</version>
@@ -222,19 +211,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-kinesis</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-events</artifactId>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
