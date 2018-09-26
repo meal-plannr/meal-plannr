@@ -3,10 +3,14 @@ package com.mealplanner.test;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapperConfig.SaveBehavior;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
@@ -22,7 +26,9 @@ import com.mealplanner.domain.Meal;
 
 public class IntegrationTestBase {
 
-    private static boolean localMealsTableCreated = false;
+    private static final Logger LOGGER = LogManager.getLogger(IntegrationTestBase.class);
+
+    private static boolean localSetupComplete = false;
 
     private final AppTestComponent appComponent;
 
@@ -46,27 +52,21 @@ public class IntegrationTestBase {
 
     @BeforeEach
     public void setup() throws Exception {
-        if (!localMealsTableCreated && needToCreateTables()) {
+        if (properties.isLocalEnvironment() && !localSetupComplete) {
+            LOGGER.debug("Starting local setup");
+
             createMealsTable();
-            localMealsTableCreated = true;
+
+            localSetupComplete = true;
+            LOGGER.debug("Local setup complete");
         }
 
         deleteMeals();
     }
 
-    private boolean needToCreateTables() {
-        return properties.needToCreateDynamoTables();
-    }
-
-    private void deleteMeals() {
-        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-        final PaginatedScanList<Meal> result = mealsMapper.scan(Meal.class, scanExpression);
-        for (final Meal meal : result) {
-            mealsMapper.delete(meal);
-        }
-    }
-
     private void createMealsTable() throws Exception {
+        LOGGER.debug("Creating meals table if it doesn't already exist");
+
         final String mealsTableName = properties.getMealsTableName();
 
         TableUtils.createTableIfNotExists(amazonDynamoDb, new CreateTableRequest()
@@ -90,5 +90,20 @@ public class IntegrationTestBase {
                         .withWriteCapacityUnits(1L)));
 
         TableUtils.waitUntilActive(amazonDynamoDb, mealsTableName, 5000, 100);
+
+        LOGGER.debug("Meals table created");
+    }
+
+    private void deleteMeals() {
+        LOGGER.debug("Deleting all meals");
+
+        final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
+        final PaginatedScanList<Meal> result = mealsMapper.scan(Meal.class, scanExpression);
+        for (final Meal meal : result) {
+            mealsMapper.delete(meal,
+                    new DynamoDBMapperConfig.Builder()
+                            .withSaveBehavior(SaveBehavior.CLOBBER)
+                            .build());
+        }
     }
 }

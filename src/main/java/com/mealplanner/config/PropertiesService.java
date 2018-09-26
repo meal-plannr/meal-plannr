@@ -4,30 +4,38 @@ import java.io.IOException;
 import java.util.Properties;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Singleton
 public class PropertiesService {
 
+    public static final String CI_PROPERTIES_FILENAME = "ci.properties";
+    public static final String LOCAL_PROPERTIES_FILENAME = "local.properties";
+
+    public static final String ERROR_UNKNOWN_ENVIRONMENT = "Unknown environment [%s] to get a properties file for";
+
     public static final String AWS_REGION = "aws.region";
     public static final String DYNAMO_MEALS_TABLE_NAME = "dynamo.mealsTableName";
     public static final String DYNAMO_ENDPOINT = "dynamo.endpoint";
-    public static final String DYNAMO_CREATE_TABLES = "dynamo.createTables";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesService.class);
+    private static final Logger LOGGER = LogManager.getLogger(PropertiesService.class);
 
     private final Properties props = new Properties();
+    private final Environment environment;
 
     @Inject
-    public PropertiesService(final PropertiesFileSelectorService propertiesFileSelectorService) {
-        if (propertiesFileSelectorService.isRunningInProduction()) {
+    public PropertiesService(@Named("environment") final Environment environment) {
+        this.environment = environment;
+
+        if (environment == Environment.PRODUCTION) {
             props.setProperty(AWS_REGION, System.getenv("region"));
             props.setProperty(DYNAMO_MEALS_TABLE_NAME, System.getenv("tableName"));
         } else {
-            final String fileName = propertiesFileSelectorService.getPropertiesFile();
+            final String fileName = getPropertiesFilename(environment);
             try {
                 props.load(getClass().getClassLoader().getResourceAsStream(fileName));
             } catch (final IOException e) {
@@ -35,6 +43,17 @@ public class PropertiesService {
                 LOGGER.error(error, e);
                 throw new IllegalStateException(error, e);
             }
+        }
+    }
+
+    private String getPropertiesFilename(final Environment environment) {
+        switch (environment) {
+        case CI:
+            return CI_PROPERTIES_FILENAME;
+        case LOCAL:
+            return LOCAL_PROPERTIES_FILENAME;
+        default:
+            throw new IllegalStateException(String.format(ERROR_UNKNOWN_ENVIRONMENT, environment));
         }
     }
 
@@ -50,7 +69,7 @@ public class PropertiesService {
         return props.getProperty(DYNAMO_ENDPOINT);
     }
 
-    public boolean needToCreateDynamoTables() {
-        return Boolean.valueOf(props.getProperty(DYNAMO_CREATE_TABLES));
+    public boolean isLocalEnvironment() {
+        return environment == Environment.LOCAL;
     }
 }

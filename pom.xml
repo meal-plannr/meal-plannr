@@ -22,7 +22,7 @@
 
         <!-- dependency versions -->
         <aws.sdk.version>1.11.412</aws.sdk.version>
-        <jackson.version>2.8.5</jackson.version>
+        <jackson.version>2.6.7</jackson.version>
         <symphonia.lambda-logging.version>1.0.0</symphonia.lambda-logging.version>
         <dagger.version>2.17</dagger.version>
         <junit.version>5.2.0</junit.version>
@@ -33,6 +33,7 @@
         <reflections.version>0.9.11</reflections.version>
         <guava.version>26.0-jre</guava.version>
         <lambda-java-log4j.version>1.0.0</lambda-java-log4j.version>
+        <log4j.version>2.8.2</log4j.version>
     </properties>
 
     <dependencyManagement>
@@ -46,7 +47,7 @@
             </dependency>
             <dependency>
                 <groupId>com.amazonaws</groupId>
-                <artifactId>aws-lambda-java-log4j</artifactId>
+                <artifactId>aws-lambda-java-log4j2</artifactId>
                 <version>${lambda-java-log4j.version}</version>
             </dependency>
             <dependency>
@@ -63,11 +64,6 @@
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
                 <version>${jackson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.symphonia</groupId>
-                <artifactId>lambda-logging</artifactId>
-                <version>${symphonia.lambda-logging.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.dagger</groupId>
@@ -131,6 +127,16 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -138,10 +144,6 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-lambda</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-lambda-java-log4j</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -158,10 +160,6 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.symphonia</groupId>
-            <artifactId>lambda-logging</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.dagger</groupId>
@@ -214,6 +212,18 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-lambda-java-log4j2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -242,8 +252,22 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer
+                                    implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
+                                </transformer>
+                            </transformers>
+                        </configuration>
                     </execution>
                 </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.github.edwgiz</groupId>
+                        <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+                        <version>2.8.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

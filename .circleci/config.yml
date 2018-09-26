@@ -10,6 +10,7 @@ jobs:
       - image: mealplannr/circleci-api-build:1.1
         environment:
           MAVEN_OPTS: -Xmx3200m
+          MEAL_PLANNR_ENVIRONMENT: ci
 
     working_directory: ~/repo
 
@@ -39,7 +40,7 @@ jobs:
 
       - run:
           name: Run tests and package jar
-          command: mvn -DrunningTestsOnCi="true" clean verify
+          command: mvn clean verify
 
       - persist_to_workspace:
           root: ~/repo

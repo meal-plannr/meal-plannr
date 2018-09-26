@@ -5,8 +5,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -24,7 +24,7 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
 
     public static final String ERROR_MESSAGE_TEMPLATE = "Error saving meal with request [%s]";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CreateMealHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(CreateMealHandler.class);
 
     @Inject
     MealRepository mealRepository;
@@ -38,7 +38,7 @@ public class CreateMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
     public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
         try {
             final String userId = request.getRequestContext().getIdentity().getCognitoIdentityId();
-            LOGGER.info("User ID [{}]", userId);
+            LOGGER.debug("User ID [{}]", userId);
 
             final JsonNode body = new ObjectMapper().readTree(request.getBody());
             final Meal meal = mealRepository.create();

@@ -5,8 +5,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -21,7 +21,7 @@ public class DeleteMealHandler implements RequestHandler<ApiGatewayRequest, ApiG
 
     public static final String ERROR_MESSAGE_TEMPLATE = "Error deleting meal for request [%s]";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteMealHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(DeleteMealHandler.class);
 
     @Inject
     MealRepository repository;

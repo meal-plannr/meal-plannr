@@ -10,7 +10,7 @@ provider:
     tableName:
       Ref: MealsTable
     region: ${self:provider.region}
-    production: true
+    MEAL_PLANNR_ENVIRONMENT: prod
 
   iamRoleStatements:
     - Effect: Allow
