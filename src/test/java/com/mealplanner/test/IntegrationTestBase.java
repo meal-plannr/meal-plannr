@@ -146,12 +146,15 @@ public class IntegrationTestBase {
     }
 
     private void deleteMeals() {
-        LOGGER.info("Deleting all meals");
+        LOGGER.debug("Deleting all meals");
 
         final DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
         final PaginatedScanList<Meal> result = mealsMapper.scan(Meal.class, scanExpression);
         for (final Meal meal : result) {
-            mealsMapper.delete(meal);
+            mealsMapper.delete(meal,
+                    new DynamoDBMapperConfig.Builder()
+                            .withSaveBehavior(SaveBehavior.CLOBBER)
+                            .build());
         }
     }
 }
