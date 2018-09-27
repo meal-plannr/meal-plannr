@@ -3,8 +3,6 @@ package com.mealplanner.config;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
@@ -27,7 +25,7 @@ public class DaoModule {
 
         final String awsRegion = properties.getAwsRegion();
         final String endpoint = properties.getDynamoEndpoint();
-        if (StringUtils.isNotBlank(endpoint)) {
+        if ((endpoint != null) && !endpoint.isEmpty()) {
             builder.withEndpointConfiguration(new EndpointConfiguration(endpoint, awsRegion));
         } else {
             builder.withRegion(awsRegion);
