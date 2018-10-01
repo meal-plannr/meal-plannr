@@ -34,9 +34,15 @@ public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGa
 
     @Override
     public ApiGatewayResponse handleRequest(final ApiGatewayRequest request, final Context context) {
+        LOGGER.debug("Entry point for listing all meals");
+
         try {
             final String userId = request.getRequestContext().getIdentity().getCognitoIdentityId();
+            LOGGER.debug("Retrieving all meals for user [{}]", userId);
+
             final List<Meal> meals = repository.getAllMealsForUser(userId);
+
+            LOGGER.debug("Retrieved [{}] meals for user [{}]", meals.size(), userId);
 
             final Map<String, String> newHeaders = new HashMap<>();
             newHeaders.put(HandlerUtil.HEADER_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
