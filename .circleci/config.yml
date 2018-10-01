@@ -61,7 +61,7 @@ jobs:
 
   dev-deploy:
     docker:
-      - image: mealplannr/circleci-api-build:1.0
+      - image: mealplannr/circleci-api-build:1.1
 
     working_directory: ~/repo
 
@@ -76,7 +76,7 @@ jobs:
 
   prod-deploy:
     docker:
-      - image: mealplannr/circleci-api-build:1.0
+      - image: mealplannr/circleci-api-build:1.1
 
     working_directory: ~/repo
 
