@@ -28,8 +28,13 @@ public class ListMealsHandler implements RequestHandler<ApiGatewayRequest, ApiGa
     MealRepository repository;
 
     public ListMealsHandler() {
+        LOGGER.debug("Instantiating ListMealsHandler - before Dagger");
         final AppComponent component = DaggerAppComponent.builder().build();
+        LOGGER.debug("Finished instantiating Dagger");
+
+        LOGGER.debug("Injecting handler");
         component.inject(this);
+        LOGGER.debug("Finished injecting handler");
     }
 
     @Override
