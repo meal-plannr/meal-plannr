@@ -29,6 +29,8 @@ public class PropertiesService {
 
     @Inject
     public PropertiesService(@Named("environment") final Environment environment) {
+        LOGGER.debug("Creating PropertiesService instance");
+
         this.environment = environment;
 
         if (environment == Environment.PRODUCTION) {
@@ -37,13 +39,17 @@ public class PropertiesService {
         } else {
             final String fileName = getPropertiesFilename(environment);
             try {
+                LOGGER.debug("Loading properties from file [{}]", fileName);
                 props.load(getClass().getClassLoader().getResourceAsStream(fileName));
+                LOGGER.debug("Finished loading properties");
             } catch (final IOException e) {
                 final String error = String.format("Error loading properties file [%s]", fileName);
                 LOGGER.error(error, e);
                 throw new IllegalStateException(error, e);
             }
         }
+
+        LOGGER.debug("Finished creating PropertiesService instance");
     }
 
     private String getPropertiesFilename(final Environment environment) {
