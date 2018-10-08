@@ -32,6 +32,7 @@
         <reflections.version>0.9.11</reflections.version>
         <lambda-java-log4j.version>1.0.0</lambda-java-log4j.version>
         <log4j.version>2.8.2</log4j.version>
+        <lambda-java-core.version>1.1.0</lambda-java-core.version>
     </properties>
 
     <dependencyManagement>
@@ -125,13 +126,18 @@
                 <artifactId>log4j-api</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.amazonaws</groupId>
+                <artifactId>aws-lambda-java-core</artifactId>
+                <version>${lambda-java-core.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-lambda</artifactId>
+            <artifactId>aws-lambda-java-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
