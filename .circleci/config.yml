@@ -1,0 +1,110 @@
+# Java Maven CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: mealplannr/circleci-api-build:1.1
+        environment:
+          MAVEN_OPTS: -Xmx3200m
+          MEAL_PLANNR_ENVIRONMENT: ci
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "pom.xml" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
+
+      - run: mvn dependency:go-offline
+
+      - save_cache:
+          paths:
+            - ~/.m2
+          key: v1-dependencies-{{ checksum "pom.xml" }}
+
+      - run:
+          name: Build jar for Serverless deploy (skip tests)
+          command: mvn -DskipTests clean package
+
+      - run:
+          name: Create infrastructure to run integration tests against
+          command: sls deploy -v --stage ci
+
+      - run:
+          name: Run tests and package jar
+          command: mvn clean verify
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - target/aws-api-dev.jar
+            - .serverless
+            - serverless.yml
+            - resources
+
+      - run:
+          name: Run code quality checks
+          command: mvn sonar:sonar -Dsonar.login=$SONAR_CLOUD_ID
+
+      - run:
+          name: Remove infastructure
+          command: sls remove -v --stage ci
+          when: always
+
+  dev-deploy:
+    docker:
+      - image: mealplannr/circleci-api-build:1.1
+
+    working_directory: ~/repo
+
+    steps:
+
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Deploy to dev
+          command: sls deploy -v
+
+  prod-deploy:
+    docker:
+      - image: mealplannr/circleci-api-build:1.1
+
+    working_directory: ~/repo
+
+    steps:
+
+      - attach_workspace:
+          at: ~/repo
+
+      - run:
+          name: Deploy to Prod
+          command: sls deploy -v --stage prod
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - master
+      - dev-deploy:
+          requires:
+            - build
+      - hold:
+          type: approval
+          requires:
+            - dev-deploy
+      - prod-deploy:
+          requires:
+            - hold
