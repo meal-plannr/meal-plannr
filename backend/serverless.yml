@@ -32,7 +32,7 @@ package:
 
 functions:
   createMeal:
-    handler: com.mealplanner.function.CreateMealHandler
+    handler: com.mealplanner.meal.CreateMealHandler
     events:
       - http:
           path: /meals
@@ -40,7 +40,7 @@ functions:
           cors: true
           authorizer: aws_iam
   getMeal:
-    handler: com.mealplanner.function.GetMealHandler
+    handler: com.mealplanner.meal.GetMealHandler
     events:
       - http:
           path: /meals/{id}
@@ -48,15 +48,15 @@ functions:
           cors: true
           authorizer: aws_iam
   list:
-      handler: com.mealplanner.function.ListMealsHandler
-      events:
-        - http:
-            path: /meals
-            method: get
-            cors: true
-            authorizer: aws_iam
+    handler: com.mealplanner.meal.ListMealsHandler
+    events:
+      - http:
+          path: /meals
+          method: get
+          cors: true
+          authorizer: aws_iam
   updateMeal:
-    handler: com.mealplanner.function.PutMealHandler
+    handler: com.mealplanner.meal.PutMealHandler
     events:
       - http:
           path: /meals/{id}
@@ -64,7 +64,7 @@ functions:
           cors: true
           authorizer: aws_iam
   deleteMeal:
-    handler: com.mealplanner.function.DeleteMealHandler
+    handler: com.mealplanner.meal.DeleteMealHandler
     events:
       - http:
           path: /meals/{id}

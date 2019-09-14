@@ -1,4 +1,4 @@
-package com.mealplanner.function.test;
+package com.mealplanner.meal;
 
 public class ListMealsHandlerTest {
 

@@ -3,12 +3,12 @@ package com.mealplanner;
 import javax.inject.Singleton;
 
 import com.mealplanner.aws.AwsModule;
-import com.mealplanner.function.CreateMealHandler;
-import com.mealplanner.function.DeleteMealHandler;
-import com.mealplanner.function.GetMealHandler;
-import com.mealplanner.function.ListMealsHandler;
-import com.mealplanner.function.PutMealHandler;
+import com.mealplanner.meal.CreateMealHandler;
+import com.mealplanner.meal.DeleteMealHandler;
+import com.mealplanner.meal.GetMealHandler;
+import com.mealplanner.meal.ListMealsHandler;
 import com.mealplanner.meal.MealModule;
+import com.mealplanner.meal.PutMealHandler;
 
 import dagger.Component;
 

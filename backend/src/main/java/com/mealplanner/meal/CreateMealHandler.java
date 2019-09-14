@@ -1,4 +1,4 @@
-package com.mealplanner.function;
+package com.mealplanner.meal;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

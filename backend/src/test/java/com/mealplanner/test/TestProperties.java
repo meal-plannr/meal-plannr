@@ -6,8 +6,8 @@ import java.util.Properties;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class TestProperties {
@@ -17,7 +17,7 @@ public class TestProperties {
     private static final String AWS_REGION = "aws.region";
     private static final String DYNAMO_ENDPOINT = "dynamo.endpoint";
 
-    private static final Logger LOGGER = LogManager.getLogger(TestProperties.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestProperties.class);
 
     private final Properties props = new Properties();
 

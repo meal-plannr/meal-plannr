@@ -1,6 +1,4 @@
-package com.mealplanner.function.test;
-
-import com.mealplanner.meal.Meal;
+package com.mealplanner.meal;
 
 public class CreateMealHandlerTest {
 

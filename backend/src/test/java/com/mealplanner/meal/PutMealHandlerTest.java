@@ -1,8 +1,15 @@
-package com.mealplanner.function.test;
+package com.mealplanner.meal;
 
-public class DeleteMealHandlerTest {
+public class PutMealHandlerTest {
 
     //    private static final String MEAL_ID = "m1";
+    //    private static final String MEAL_DESCRIPTION_ORIGINAL = "meal description";
+    //    private static final String MEAL_DESCRIPTION_NEW = "meal description updated";
+    //    private static final Meal MEAL = new Meal.Builder()
+    //            .mealId(MEAL_ID)
+    //            .userId(USER_ID)
+    //            .description(MEAL_DESCRIPTION_ORIGINAL)
+    //            .build();
     //
     //    @Mock
     //    private Map<String, String> pathParameters;
@@ -11,7 +18,7 @@ public class DeleteMealHandlerTest {
     //    private MealRepository mealRepository;
     //
     //    @InjectMocks
-    //    private DeleteMealHandler handler;
+    //    private PutMealHandler handler;
     //
     //    @Override
     //    @BeforeEach
@@ -20,13 +27,26 @@ public class DeleteMealHandlerTest {
     //
     //        when(request.getPathParameters()).thenReturn(pathParameters);
     //        when(pathParameters.get(eq("id"))).thenReturn(MEAL_ID);
+    //
+    //        final Map<String, String> bodyMap = ImmutableMap.of("description", MEAL_DESCRIPTION_NEW);
+    //        final String body = new ObjectMapper().writeValueAsString(bodyMap);
+    //        when(request.getBody()).thenReturn(body);
+    //
+    //        when(mealRepository.get(MEAL_ID, USER_ID)).thenReturn(MEAL);
     //    }
     //
     //    @Test
-    //    public void meal_is_deleted_when_id_and_user_id_are_present() throws Exception {
+    //    public void description_is_updated_with_value_from_request_body() throws Exception {
     //        handler.handleRequest(request, context);
     //
-    //        verify(mealRepository).delete(MEAL_ID, USER_ID);
+    //        assertThat(MEAL.getDescription()).isEqualTo(MEAL_DESCRIPTION_NEW);
+    //    }
+    //
+    //    @Test
+    //    public void meal_is_updated_when_description_and_user_id_are_set() throws Exception {
+    //        handler.handleRequest(request, context);
+    //
+    //        verify(mealRepository).save(MEAL);
     //    }
     //
     //    @Test
@@ -46,7 +66,7 @@ public class DeleteMealHandlerTest {
     //
     //    @Test
     //    public void http_status_code_500_returned_on_error() throws Exception {
-    //        doThrow(RuntimeException.class).when(mealRepository).delete(MEAL_ID, USER_ID);
+    //        doThrow(RuntimeException.class).when(mealRepository).save(MEAL);
     //
     //        final ApiGatewayResponse response = handler.handleRequest(request, context);
     //
@@ -55,11 +75,11 @@ public class DeleteMealHandlerTest {
     //
     //    @Test
     //    public void body_contains_error_text_when_error_occurs() throws Exception {
-    //        doThrow(RuntimeException.class).when(mealRepository).delete(MEAL_ID, USER_ID);
+    //        doThrow(RuntimeException.class).when(mealRepository).save(MEAL);
     //
     //        final ApiGatewayResponse response = handler.handleRequest(request, context);
     //
-    //        final String expectedErrorResponse = String.format(DeleteMealHandler.ERROR_MESSAGE_TEMPLATE, request);
+    //        final String expectedErrorResponse = String.format(PutMealHandler.ERROR_MESSAGE_TEMPLATE, request);
     //        assertThat(response.getBody()).isEqualTo(expectedErrorResponse);
     //    }
 }
