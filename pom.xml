@@ -1,6 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.meal-plannr</groupId>
@@ -26,7 +26,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <!-- dependency versions -->
-        <aws.sdk.version>2.7.36</aws.sdk.version>
+        <aws.sdk.version>2.8.7</aws.sdk.version>
         <lambda-java-core.version>1.2.0</lambda-java-core.version>
         <aws.lambda.java.events.version>2.2.6</aws.lambda.java.events.version>
         <lambda-java-log4j.version>1.1.0</lambda-java-log4j.version>
@@ -36,6 +36,9 @@
         <mockito.version>2.28.2</mockito.version>
         <assertj.version>3.13.2</assertj.version>
         <reflections.version>0.9.11</reflections.version>
+        <surefire.version>2.22.2</surefire.version>
+        <failsafe.version>2.22.2</failsafe.version>
+        <jackson.databind.version>2.9.9.2</jackson.databind.version>
     </properties>
 
     <dependencyManagement>
@@ -81,6 +84,11 @@
                 <groupId>com.google.dagger</groupId>
                 <artifactId>dagger</artifactId>
                 <version>${dagger.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.databind.version}</version>
             </dependency>
 
             <!-- Test scope dependencies -->
@@ -152,7 +160,7 @@
                         <configuration>
                             <transformers>
                                 <transformer
-                                    implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
+                                        implementation="com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer">
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -175,7 +183,7 @@
                         <path>
                             <groupId>com.google.dagger</groupId>
                             <artifactId>dagger-compiler</artifactId>
-                            <version>2.17</version>
+                            <version>${dagger.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -183,7 +191,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>${surefire.version}</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -197,7 +205,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>2.22.0</version>
+                <version>${failsafe.version}</version>
                 <configuration>
                     <includes>
                         <include>**/*IT.java</include>
