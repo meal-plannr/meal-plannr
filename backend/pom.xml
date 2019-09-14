@@ -78,4 +78,61 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>setup-local-mocks</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <imagePullPolicy>always</imagePullPolicy>
+                            <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+                            <images>
+                                <image>
+                                    <name>amazon/dynamodb-local</name>
+                                    <alias>dynamodb-local</alias>
+                                    <run>
+                                        <network>
+                                            <mode>custom</mode>
+                                            <name>meal-plannr-local-network</name>
+                                        </network>
+                                        <ports>
+                                            <port>${dynamodb.port}:8000</port>
+                                        </ports>
+                                        <log>
+                                            <prefix>%a =></prefix>
+                                            <date>default</date>
+                                            <color>red</color>
+                                        </log>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>remove-local-mocks</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

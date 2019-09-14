@@ -39,6 +39,11 @@
         <surefire.version>2.22.2</surefire.version>
         <failsafe.version>2.22.2</failsafe.version>
         <jackson.databind.version>2.9.9.2</jackson.databind.version>
+        <docker-maven-plugin.version>0.31.0</docker-maven-plugin.version>
+
+        <!-- Endpoints for local testing -->
+        <dynamodb.port>8000</dynamodb.port>
+        <dynamodb.hostname>http://localhost:${dynamodb.port}</dynamodb.hostname>
     </properties>
 
     <dependencyManagement>
