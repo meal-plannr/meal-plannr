@@ -19,20 +19,32 @@ import org.apache.shiro.util.ThreadState;
 public class SecurityService {
 
     private final SecurityManager securityManager;
-    private Deque<UserContext> authStack = new ArrayDeque<>();
+    private Deque<UserContext> userContextsStack = new ArrayDeque<>();
 
     @Inject
     SecurityService(final SecurityManager securityManager) {
         this.securityManager = securityManager;
     }
 
-    public ThreadState initialiseContext(final String userId) {
-        authStack = new ArrayDeque<>();
+    /**
+     * Reset the authorisation stack and push the supplied user on to the stack
+     *
+     * @param userId The user ID to push to the stack
+     * @return A {@link ThreadState} bound to a subject representing the user
+     */
+    public ThreadState initialiseAndPushUser(final String userId) {
+        userContextsStack = new ArrayDeque<>();
         return pushUser(userId);
     }
 
+    /**
+     * Add a user to the top of the authorisation stack, making them to current user
+     *
+     * @param userId The ID of the user
+     * @return A {@link ThreadState} bound to a subject representing the user
+     */
     public ThreadState pushUser(final String userId) {
-        authStack.push(new UserContext(userId));
+        userContextsStack.push(new UserContext(userId));
         return createThreadState(userId);
     }
 
@@ -45,19 +57,29 @@ public class SecurityService {
         return subjectThreadState;
     }
 
+    /**
+     * Remove the current user from the top of the stack. If there was a previous user on the stack, they become the current user
+     *
+     * @return
+     */
     public ThreadState popUser() {
-        if (!authStack.isEmpty()) {
-            authStack.pop();
-            final UserContext previousUserContext = authStack.peek();
+        if (!userContextsStack.isEmpty()) {
+            userContextsStack.pop();
+            final UserContext previousUserContext = userContextsStack.peek();
             if (previousUserContext != null) {
-                return pushUser(previousUserContext.userId);
+                return createThreadState(previousUserContext.userId);
             }
         }
         return null;
     }
 
-    public boolean authStackIsEmpty() {
-        return authStack.isEmpty();
+    /**
+     * Check if the user contexts stack is empty
+     *
+     * @return True if the stack is empty, false otherwise
+     */
+    public boolean userContextsStackIsEmpty() {
+        return userContextsStack.isEmpty();
     }
 
     private class UserContext {
