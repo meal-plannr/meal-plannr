@@ -50,7 +50,7 @@ public class SecurityService {
 
     private ThreadState createThreadState(final String userId) {
         final Subject subject = new Subject.Builder(securityManager)
-                .principals(new SimplePrincipalCollection(userId, DynamoDbRealm.NAME))
+                .principals(new SimplePrincipalCollection(userId, DynamoDbAuthorisingRealm.NAME))
                 .buildSubject();
         final SubjectThreadState subjectThreadState = new SubjectThreadState(subject);
         subjectThreadState.bind();

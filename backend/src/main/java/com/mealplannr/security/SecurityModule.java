@@ -29,9 +29,9 @@ public abstract class SecurityModule {
 
     @Singleton
     @Provides
-    static Collection<Realm> realms(final DynamoDbRealm dynamoDbRealm) {
+    static Collection<Realm> realms(final DynamoDbAuthorisingRealm dynamoDbAuthorisingRealm) {
         return new ImmutableList.Builder<Realm>()
-                .add(dynamoDbRealm)
+                .add(dynamoDbAuthorisingRealm)
                 .build();
     }
 }
