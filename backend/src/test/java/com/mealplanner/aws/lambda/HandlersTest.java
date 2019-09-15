@@ -1,4 +1,4 @@
-package com.mealplanner.meal;
+package com.mealplanner.aws.lambda;
 
 import java.util.Set;
 import java.util.stream.Stream;
