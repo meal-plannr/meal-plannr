@@ -94,4 +94,13 @@ public class SecurityServiceLT extends LocalTestBase {
         securityService.popUser();
         assertThat(SecurityUtils.getSubject().getPrincipal()).isEqualTo(USER_1_ID);
     }
+
+    @Test
+    void clearContext_clears_subject() {
+        final ThreadState threadState = securityService.initialiseAndPushUser(USER_1_ID);
+
+        securityService.clearContext(threadState);
+
+        assertThat(SecurityUtils.getSubject().getPrincipal()).isNull();
+    }
 }

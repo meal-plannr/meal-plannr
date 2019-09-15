@@ -82,6 +82,10 @@ public class SecurityService {
         return userContextsStack.isEmpty();
     }
 
+    public void clearContext(final ThreadState threadState) {
+        threadState.clear();
+    }
+
     private class UserContext {
         private final String userId;
 

@@ -6,6 +6,7 @@ import com.mealplannr.aws.TestAwsModule;
 import com.mealplannr.meal.TestMealModule;
 import com.mealplannr.security.SecurityModule;
 import com.mealplannr.security.SecurityServiceLT;
+import com.mealplannr.security.UserServiceLT;
 import com.mealplannr.test.LocalTestBase;
 
 import dagger.Component;
@@ -20,4 +21,6 @@ public interface AppTestComponent {
     void inject(LocalTestBase localTestBase);
 
     void inject(SecurityServiceLT securityServiceLT);
+
+    void inject(UserServiceLT userServiceLT);
 }

@@ -1,5 +1,7 @@
 package com.mealplannr.security;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -17,9 +19,23 @@ public class DynamoDbAuthorisingRealm extends AuthorizingRealm {
 
     static final String ERROR_AUTHENTICATION_NOT_SUPPORTED = "This realm does not support authentication";
 
-    @Inject
-    DynamoDbAuthorisingRealm() {
+    private final AclService aclService;
+    private final UserService userService;
 
+    @Inject
+    DynamoDbAuthorisingRealm(final AclService aclService, final UserService userService) {
+        this.aclService = aclService;
+        this.userService = userService;
+    }
+
+    @Override
+    public boolean isPermitted(final PrincipalCollection principals, final String permission) {
+        final Set<String> userAuthorities = userService.getUserAuthorities();
+
+        // Find all of the ACLs for the team we're trying to access and the user's authorities (themself and any groups)
+        // If any ACLs are found then the user has permission to access
+        final Set<Acl> aclsForTeam = aclService.getAcls(permission, userAuthorities);
+        return !aclsForTeam.isEmpty();
     }
 
     @Override
