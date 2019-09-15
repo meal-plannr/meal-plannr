@@ -1,24 +1,27 @@
-package com.mealplanner.meal;
+package com.mealplannr.meal;
+
+import java.net.URI;
 
 import javax.inject.Singleton;
 
+import com.mealplannr.test.TestProperties;
+
 import dagger.Module;
 import dagger.Provides;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClientBuilder;
 
 @Module(includes = BaseMealModule.class)
-public abstract class MealModule {
+public abstract class TestMealModule {
 
     @Provides
     @Singleton
-    static DynamoDbClientBuilder dynamoDbClientBuilder(final SdkHttpClient httpClient, final AwsCredentialsProvider credentialsProvider, final Region region) {
+    static DynamoDbClientBuilder dynamoDbClientBuilder(final TestProperties properties, final SdkHttpClient httpClient, final Region region) {
         return DynamoDbClient.builder()
                 .httpClient(httpClient)
-                .credentialsProvider(credentialsProvider)
-                .region(region);
+                .region(region)
+                .endpointOverride(URI.create(properties.getDynamoEndpoint()));
     }
 }

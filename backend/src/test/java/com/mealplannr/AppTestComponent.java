@@ -1,10 +1,10 @@
-package com.mealplanner;
+package com.mealplannr;
 
 import javax.inject.Singleton;
 
-import com.mealplanner.aws.TestAwsModule;
-import com.mealplanner.meal.TestMealModule;
-import com.mealplanner.test.IntegrationTestBase;
+import com.mealplannr.aws.TestAwsModule;
+import com.mealplannr.meal.TestMealModule;
+import com.mealplannr.test.IntegrationTestBase;
 
 import dagger.Component;
 

@@ -1,8 +1,8 @@
-package com.mealplanner.aws;
+package com.mealplannr.aws;
 
 import javax.inject.Singleton;
 
-import com.mealplanner.meal.BaseMealModule;
+import com.mealplannr.meal.BaseMealModule;
 
 import dagger.Module;
 import dagger.Provides;

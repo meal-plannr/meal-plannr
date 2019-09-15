@@ -199,11 +199,11 @@
                 <version>${surefire.version}</version>
                 <configuration>
                     <includes>
-                        <include>**/*Test.java</include>
+                        <include>**/*UT.java</include>
                     </includes>
                     <excludes>
                         <exclude>**/Abstract*.java</exclude>
-                        <exclude>**/*IT.java</exclude>
+                        <exclude>**/*LT.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
@@ -213,11 +213,11 @@
                 <version>${failsafe.version}</version>
                 <configuration>
                     <includes>
-                        <include>**/*IT.java</include>
+                        <include>**/*LT.java</include>
                     </includes>
                     <excludes>
                         <exclude>**/Abstract*.java</exclude>
-                        <exclude>**/*Test.java</exclude>
+                        <exclude>**/*UT.java</exclude>
                     </excludes>
                 </configuration>
                 <executions>

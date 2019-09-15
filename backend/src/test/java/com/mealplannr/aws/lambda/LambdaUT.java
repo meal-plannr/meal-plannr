@@ -1,4 +1,4 @@
-package com.mealplanner.aws.lambda;
+package com.mealplannr.aws.lambda;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -9,15 +9,14 @@ import org.reflections.Reflections;
 
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 
-public class HandlersTest {
+class LambdaUT {
 
     @Test
-    public void all_handlers_have_zero_argument_constructor() {
-        final Reflections reflections = new Reflections("com.mealplanner");
+    void all_handlers_have_zero_argument_constructor() {
+        final Reflections reflections = new Reflections("com.mealplannr");
 
-        @SuppressWarnings("rawtypes")
         final Set<Class<? extends RequestHandler>> subTypes = reflections.getSubTypesOf(RequestHandler.class);
-        subTypes.stream().forEach(clazz -> assertClassHasOnlyZeroArgumentConstructor(clazz));
+        subTypes.forEach(this::assertClassHasOnlyZeroArgumentConstructor);
     }
 
     private void assertClassHasOnlyZeroArgumentConstructor(final Class<?> clazz) {
@@ -25,7 +24,7 @@ public class HandlersTest {
                 .anyMatch(c -> c.getParameterCount() == 0);
 
         if (!hasZeroArgConstructor) {
-            Assertions.fail(clazz.getName() + " does not have a zero argument constructor. This will prevent it being created in AWS");
+            Assertions.fail(clazz.getName() + " does not have a zero argument constructor. This will prevent it being instantiated in AWS");
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.mealplanner.test;
+package com.mealplannr.test;
 
 import java.io.IOException;
 import java.util.Properties;

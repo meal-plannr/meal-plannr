@@ -1,4 +1,4 @@
-package com.mealplanner.meal;
+package com.mealplannr.meal;
 
 import javax.inject.Singleton;
 

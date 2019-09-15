@@ -1,7 +1,7 @@
-package com.mealplanner.test;
+package com.mealplannr.test;
 
-import com.mealplanner.AppTestComponent;
-import com.mealplanner.DaggerAppTestComponent;
+import com.mealplannr.AppTestComponent;
+import com.mealplannr.DaggerAppTestComponent;
 
 public class IntegrationTestBase {
 

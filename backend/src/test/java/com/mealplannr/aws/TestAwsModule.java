@@ -1,8 +1,8 @@
-package com.mealplanner.aws;
+package com.mealplannr.aws;
 
 import javax.inject.Singleton;
 
-import com.mealplanner.test.TestProperties;
+import com.mealplannr.test.TestProperties;
 
 import dagger.Module;
 import dagger.Provides;

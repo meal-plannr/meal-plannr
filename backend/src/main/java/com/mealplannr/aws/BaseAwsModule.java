@@ -1,4 +1,4 @@
-package com.mealplanner.aws;
+package com.mealplannr.aws;
 
 import javax.inject.Singleton;
 

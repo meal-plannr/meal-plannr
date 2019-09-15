@@ -1,9 +1,9 @@
-package com.mealplanner;
+package com.mealplannr;
 
 import javax.inject.Singleton;
 
-import com.mealplanner.aws.AwsModule;
-import com.mealplanner.meal.MealModule;
+import com.mealplannr.aws.AwsModule;
+import com.mealplannr.meal.MealModule;
 
 import dagger.Component;
 
