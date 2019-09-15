@@ -41,6 +41,8 @@
         <failsafe.version>2.22.2</failsafe.version>
         <jackson.databind.version>2.9.9.2</jackson.databind.version>
         <docker-maven-plugin.version>0.31.0</docker-maven-plugin.version>
+        <shiro.version>1.4.1</shiro.version>
+        <guava.version>28.1-jre</guava.version>
 
         <!-- Endpoints for local testing -->
         <dynamodb.port>8000</dynamodb.port>
@@ -96,6 +98,17 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.databind.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-core</artifactId>
+                <version>${shiro.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
 
             <!-- Test scope dependencies -->
             <dependency>
