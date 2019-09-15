@@ -7,10 +7,7 @@ provider:
   stage: dev
 
   environment:
-    tableName:
-      Ref: MealsTable
-    region: ${self:provider.region}
-    MEAL_PLANNR_ENVIRONMENT: prod
+    MEAL_PLANNR_REGION: ${self:provider.region}
 
   iamRoleStatements:
     - Effect: Allow
@@ -31,46 +28,6 @@ package:
   artifact: target/aws-api-dev.jar
 
 functions:
-  createMeal:
-    handler: com.mealplanner.meal.CreateMealHandler
-    events:
-      - http:
-          path: /meals
-          method: post
-          cors: true
-          authorizer: aws_iam
-  getMeal:
-    handler: com.mealplanner.meal.GetMealHandler
-    events:
-      - http:
-          path: /meals/{id}
-          method: get
-          cors: true
-          authorizer: aws_iam
-  list:
-    handler: com.mealplanner.meal.ListMealsHandler
-    events:
-      - http:
-          path: /meals
-          method: get
-          cors: true
-          authorizer: aws_iam
-  updateMeal:
-    handler: com.mealplanner.meal.PutMealHandler
-    events:
-      - http:
-          path: /meals/{id}
-          method: put
-          cors: true
-          authorizer: aws_iam
-  deleteMeal:
-    handler: com.mealplanner.meal.DeleteMealHandler
-    events:
-      - http:
-          path: /meals/{id}
-          method: delete
-          cors: true
-          authorizer: aws_iam
 
 custom:
   # Our stage is based on what is passed in when running serverless
@@ -81,10 +38,6 @@ custom:
     prod: 5
     default: 1
   tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
-  # Load our webpack config
-  webpack:
-    webpackConfig: ./webpack.config.js
-    includeModules: true
 
 resources:
   # DynamoDB
