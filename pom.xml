@@ -39,7 +39,7 @@
         <reflections.version>0.9.11</reflections.version>
         <surefire.version>2.22.2</surefire.version>
         <failsafe.version>2.22.2</failsafe.version>
-        <jackson.databind.version>2.9.9.2</jackson.databind.version>
+        <jackson.databind.version>2.9.10.4</jackson.databind.version>
         <docker-maven-plugin.version>0.31.0</docker-maven-plugin.version>
         <shiro.version>1.4.1</shiro.version>
         <guava.version>28.1-jre</guava.version>
